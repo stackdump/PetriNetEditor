@@ -1,0 +1,39 @@
+---
+version: '2'
+services:
+  bitwrap-postgres:
+    image: postgres:9.6
+    hostname: bitwrap-postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: bitwrap
+
+  bitwrap-rabbit:
+    image: rabbitmq:3-management
+    hostname: bitwrap-rabbit
+    ports:
+      - 15672:15672
+      - 5672:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: bitwrap
+      RABBITMQ_DEFAULT_PASS: bitwrap
+
+  bitwrap-api:
+    image: stackdump/bitwrap-brython:dev
+    hostname: txbitwrap
+    command: api
+    ports:
+      - 8080:8080
+    build:
+      context: ./
+    environment:
+      PG_USER: postgres
+      PG_PASSWORD: bitwrap
+      PG_HOST: bitwrap-postgres
+      AMQP_USER: bitwrap
+      AMQP_PASS: bitwrap
+    depends_on:
+      - bitwrap-rabbit
+      - bitwrap-postgres

@@ -1,0 +1,13 @@
+{
+  "endpoint": "https://api-qa.bitwrap.io",
+  "use_websocket": true,
+  "auth": {
+    "provider": "github",
+    "github": {
+      "oauth_uri": "https://github.com/login/oauth/authorize",
+      "redirect_uri": "http://blachain.com/bitwrap-brython/",
+      "client_id": "142840e7d2cf32cddbff"
+    }
+  }
+
+}

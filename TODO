@@ -1,0 +1,48 @@
+Sun Feb 11 10:39:22 CST 2018
+
+WIP
+---
+* fix marker alignment / adjust layout based on direction
+
+* finish GUI elements & helpers
+  * add arc, place, transition, and markings
+
+BACKLOG
+-------
+
+* build out Petri-Net editor
+  * render petri-net from machine def
+  * support native bitwrap-machine format
+  * support downloads as <pnml>.xml
+  * should be able to add elements from brython console
+
+* editor features
+  * allow edits from console
+  * allow save to local storage
+  * allow download as pnml
+  * draging an element should change the position in the PNML/json
+
+* simulator(eventstore)
+  * hilight live transitions
+  * should store/display history
+  * provide replay, fwd back of event stream
+
+ICEBOX
+------
+
+* code simulator(event handler)
+  * use the websocket as an upstream source of events
+  * allow an end user to develop an event handler that can
+    * run in the browser
+    * download as .py and run on server 'publish'
+
+* ethereum smart contract simulator
+
+* Port octoe-game create + new game WS bindings
+  * perhaps echo ASCII-Art board to console
+
+* DEMO: Tic-tac-toe from Brython console
+
+* add a build step to compile python to js in ./docs
+
+* see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
