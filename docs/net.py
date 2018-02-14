@@ -33,45 +33,72 @@ def __load_symbols():
     SYMBOLS['transition'] = _transition()
     SYMBOLS['none'] = None #FIXME_transition()
 
-    # for development render examples
+    ## development examples ##
     _origin()
 
+    place(225,200, label='foo')
+    place(225,300, label='qux')
+    place(225,400, label='wolf')
+    place(400,550, label='wang')
+
+    transition(400,250, label='bar')
+    transition(400,350, label='baz')
+    transition(400,450, label='gang')
+    transition(225,500, label='golf')
+
+    arc('foo', 'bar')
+    arc('bar', 'qux')
+    arc('qux', 'baz')
+    arc('baz', 'wolf')
+    arc('wolf', 'gang')
+    arc('gang', 'wang')
+    arc('wang', 'golf')
+    arc('golf', 'wolf')
+
+def place(x, y, label=None):
+    """ adds a place symbol """
+    _node(x, y, label=label, symbol='place')
+
+def transition(x, y, label=None):
+    """ adds a transition symbol """
+    _node(x, y, label=label, symbol='transition')
+
+def _node(x, y, label=None, symbol=None):
+    """ adds a petri-net symbol to the graph """
     point_id = _uniqueid()
-    _point(x=100, y=100, refid=point_id)
+    element = _point(x=x, y=y, refid=point_id)
+    element.data('symbol', symbol)
 
-    arc(225,200, 400,250, start='place', end='transition')
-    arc(400,350, 225,300, start='transition', end='place')
+    element.attr({ 'markerEnd': SYMBOLS[symbol] })
+    SYMBOLS[label] = element
+    return element
 
-    arc(225,400, 400,450, start='transition', end='place')
-    arc(400,550, 225,500, start='place', end='transition')
+def arc(sym1, sym2, token_weight=1):
+    """ draw arc between 2 symbols """
+    x1 = SYMBOLS[sym1].node.attributes.x2.value
+    y1 = SYMBOLS[sym1].node.attributes.y2.value
+    x2 = SYMBOLS[sym2].node.attributes.x2.value
+    y2 = SYMBOLS[sym2].node.attributes.y2.value
 
+    _id = '%s-%s' % (sym1, sym2)
+    element = _arc(x1, y1, x2, y2, arcid=_id)
 
-def arc(x1, y1, x2, y2, start=None, end=None, token_weight=1):
-    """ add place to petri-net """
-    arcid = _uniqueid()
+    return element
+
+def _arc(x1, y1, x2, y2, arcid=None):
+    """ render line with arrowhead between 2 points """
 
     _handle(x1,y1, refid=arcid, marker='start')
     _handle(x2,y2, refid=arcid, marker='end')
 
-    _attrs = {
-        'id': arcid,
-        'class': 'arc',
-        'stroke': 'none',
-        'strokeWidth': 2,
-        'markerStart': SYMBOLS[start],
-        'markerEnd': SYMBOLS[end]
-    }
-
-    element = _PAPER.line({
-        'x1': x1,
-        'y1': y1,
-        'x2': x2,
-        'y2': y2,
-    }).attr(_attrs)
-
-    _arrowhead(x1, y1, x2, y2, refid=arcid)
+    element = _arrowhead(x1, y1, x2, y2, refid=arcid)
+    element.data('symbol', 'arc')
+    element.data('start', sym1)
+    element.data('end', sym2)
 
     SYMBOLS[arcid] = element
+
+    return element
 
 def _origin(x1=0, y1=0, x2=100, y2=100):
     x_arrow = _PAPER.line({
@@ -113,7 +140,7 @@ def _point(x=0, y=0, refid=None):
     }).attr({
         'id': refid,
         'class': 'point',
-        'stroke': '#000',
+        #'stroke': '#87CDDE',
         'strokeWidth': 2
     })
 
@@ -124,22 +151,21 @@ def _point(x=0, y=0, refid=None):
 
 
 def _arrowhead(x1, y1, x2, y2, weight=1, refid=None):
-    arrowid = '%s-arrow' % refid
-
     element = _PAPER.line({
         'x1': x1,
         'y1': y1,
         'x2': x2,
         'y2': y2,
     }).attr({
-        'id': arrowid,
+        'id': refid,
         'class': 'arc',
         'stroke': '#000',
         'strokeWidth': 2,
         'markerEnd': SYMBOLS['arrow']
     })
 
-    SYMBOLS[arrowid] = element
+    SYMBOLS[refid] = element
+    return element
 
 def _arrow():
     """ arrow head """
@@ -175,7 +201,7 @@ def _handle(x=0, y=50, size=90, capacity=0, refid=None, marker=None):
         'id': handle_id,
         'class': 'handle',
         'fill': '#facade',
-        'fill-opacity': '1',
+        'fill-opacity': '0.5',
         'stroke': '#facade',
         'orient': 0 
     })
