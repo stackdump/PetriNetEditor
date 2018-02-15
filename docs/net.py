@@ -1,107 +1,146 @@
 from browser import window, document, console
+import json
 
-_PAPER = None
+PAPER = None
 """
 Snap.svg instance
 """
 
+NETS = {}
+"""
+petr-net definitions
+"""
+
 SYMBOLS = {}
 """
-graphic elements used to render a Petri-Net
+svg graphic elements used to render a Petri-Net
 """
 
-__IDX = 0
+SCHEMA = None
+"""
+petri-net in use
+"""
 
-def _uniqueid():
-    global __IDX
-    __IDX = __IDX + 1
-
-    return 'idx%i' % __IDX
-
-def __onload():
+def __onload(ctx):
     """ use snap to begin creating an SVG """
+    ctx.machine('octoe', callback=load)
 
-    global _PAPER
-    _PAPER=window.Snap('#net')
-    __load_symbols()
+def reset():
+    """ clear SVG and prepare markers """
+    global PAPER
+    
+    if not PAPER:
+        PAPER=window.Snap('#net')
 
-def __load_symbols():
+    PAPER.clear()
+    _load_symbols()
+    _origin()
+
+def load(res):
+    """ store requested PNML and render as SVG """
+    global SCHEMA
+
+    pnet  = json.loads(res.text)
+    SCHEMA = pnet['machine']['name']
+    NETS[SCHEMA] = pnet['machine']
+    reload()
+
+def reload():
+    """ reset then render """
+    reset()
+    render()
+
+def render(scale=1.3):
+    """ development examples """
+
+    place_defs = {}
+
+    for name, attr in NETS[SCHEMA]['places'].items():
+        place_defs[attr['offset']] = name
+        place(attr['position'][0] * scale, attr['position'][1] * scale, label=name)
+
+    arc_defs = {}
+    _size = len(place_defs)
+
+    for name, attr in NETS[SCHEMA]['transitions'].items():
+        if name not in arc_defs:
+            arc_defs[name] = { 'to': [], 'from': [] }
+
+        for i in range(0, _size):
+            if attr['delta'][i] > 0:
+                arc_defs[name]['to'].append(place_defs[i])
+
+            elif attr['delta'][i] < 0:
+                arc_defs[name]['from'].append(place_defs[i])
+
+        transition(attr['position'][0] * scale, attr['position'][1] * scale, label=name)
+
+    for txn, attrs in arc_defs.items():
+        if attrs['to']:
+            for label in attrs['to']:
+                arc(txn, label)
+
+        if attrs['from']:
+            for label in attrs['from']:
+                arc(label, txn)
+
+def place(x, y, label=None):
+    """ adds a place node """
+    return _node(x, y, label=label, symbol='place')
+
+def transition(x, y, label=None):
+    """ adds a transition node """
+    return _node(x, y, label=label, symbol='transition')
+
+def arc(sym1, sym2, token_weight=1):
+    """ draw arc between 2 points """
+    x1 = _attr(sym1).x2.value
+    y1 = _attr(sym1).y2.value
+    x2 = _attr(sym2).x2.value
+    y2 = _attr(sym2).y2.value
+
+    _id = '%s-%s' % (sym1, sym2)
+    el = _arc(x1, y1, x2, y2, arcid=_id)
+    el.data('symbol', 'arc')
+    el.data('start', sym1)
+    el.data('end', sym2)
+
+    return el
+
+def _load_symbols():
     """ use snap to generate the symbols needed to render a petri-net """
     window.SYMBOLS = SYMBOLS
     SYMBOLS['arrow'] = _arrow()
     SYMBOLS['place'] = _place()
     SYMBOLS['transition'] = _transition()
-    SYMBOLS['none'] = None #FIXME_transition()
-
-    ## development examples ##
-    _origin()
-
-    place(225,200, label='foo')
-    place(225,300, label='qux')
-    place(225,400, label='wolf')
-    place(400,550, label='wang')
-
-    transition(400,250, label='bar')
-    transition(400,350, label='baz')
-    transition(400,450, label='gang')
-    transition(225,500, label='golf')
-
-    arc('foo', 'bar')
-    arc('bar', 'qux')
-    arc('qux', 'baz')
-    arc('baz', 'wolf')
-    arc('wolf', 'gang')
-    arc('gang', 'wang')
-    arc('wang', 'golf')
-    arc('golf', 'wolf')
-
-def place(x, y, label=None):
-    """ adds a place symbol """
-    _node(x, y, label=label, symbol='place')
-
-def transition(x, y, label=None):
-    """ adds a transition symbol """
-    _node(x, y, label=label, symbol='transition')
 
 def _node(x, y, label=None, symbol=None):
     """ adds a petri-net symbol to the graph """
-    point_id = _uniqueid()
-    element = _point(x=x, y=y, refid=point_id)
-    element.data('symbol', symbol)
+    handle_id = '%s-handle' % label
 
-    element.attr({ 'markerEnd': SYMBOLS[symbol] })
-    SYMBOLS[label] = element
-    return element
+    point_el= _point(x=x, y=y, refid=label)
+    point_el.data('symbol', symbol)
+    point_el.data('handle', handle_id)
+    point_el.attr({ 'markerEnd': SYMBOLS[symbol] })
 
-def arc(sym1, sym2, token_weight=1):
-    """ draw arc between 2 symbols """
-    x1 = SYMBOLS[sym1].node.attributes.x2.value
-    y1 = SYMBOLS[sym1].node.attributes.y2.value
-    x2 = SYMBOLS[sym2].node.attributes.x2.value
-    y2 = SYMBOLS[sym2].node.attributes.y2.value
+    handle_el = _handle(x,y, refid=handle_id)
+    handle_el.data('label', label)
 
-    _id = '%s-%s' % (sym1, sym2)
-    element = _arc(x1, y1, x2, y2, arcid=_id)
+    SYMBOLS[label] = point_el
+    return point_el
 
-    return element
+def _attr(sym):
+    """ access attributes of an existing symbol """
+    return SYMBOLS[sym].node.attributes
 
 def _arc(x1, y1, x2, y2, arcid=None):
     """ render line with arrowhead between 2 points """
-
-    _handle(x1,y1, refid=arcid, marker='start')
-    _handle(x2,y2, refid=arcid, marker='end')
-
-    element = _arrowhead(x1, y1, x2, y2, refid=arcid)
-    element.data('symbol', 'arc')
-    element.data('start', sym1)
-    element.data('end', sym2)
-
-    SYMBOLS[arcid] = element
-
-    return element
+    el = _arrowhead(x1, y1, x2, y2, refid=arcid)
+    SYMBOLS[arcid] = el
+    return el
 
 def _origin(x1=0, y1=0, x2=100, y2=100):
-    x_arrow = _PAPER.line({
+    PAPER.line({
         'x1': x1,
         'y1': y1,
         'x2': x2,
@@ -114,7 +153,7 @@ def _origin(x1=0, y1=0, x2=100, y2=100):
         'markerEnd': SYMBOLS['arrow']
     })
 
-    y_arrow = _PAPER.line({
+    PAPER.line({
         'x1': x1,
         'y1': y1,
         'x2': 0,
@@ -127,12 +166,9 @@ def _origin(x1=0, y1=0, x2=100, y2=100):
         'markerEnd': SYMBOLS['arrow']
     })
 
-    SYMBOLS['origin_x'] = x_arrow
-    SYMBOLS['origin_y'] = y_arrow
-
 def _point(x=0, y=0, refid=None):
 
-    element = _PAPER.line({
+    el = PAPER.line({
         'x1': 0,
         'y1': 0,
         'x2': x,
@@ -144,14 +180,12 @@ def _point(x=0, y=0, refid=None):
         'strokeWidth': 2
     })
 
-    element.data('coords', [x, y])
-
-    SYMBOLS[refid] = element
-    return element
+    SYMBOLS[refid] = el
+    return el
 
 
 def _arrowhead(x1, y1, x2, y2, weight=1, refid=None):
-    element = _PAPER.line({
+    el = PAPER.line({
         'x1': x1,
         'y1': y1,
         'x2': x2,
@@ -164,12 +198,12 @@ def _arrowhead(x1, y1, x2, y2, weight=1, refid=None):
         'markerEnd': SYMBOLS['arrow']
     })
 
-    SYMBOLS[refid] = element
-    return element
+    SYMBOLS[refid] = el
+    return el
 
 def _arrow():
     """ arrow head """
-    return _PAPER.path(
+    return PAPER.path(
         "M 2 59 L 293 148 L 1 243 L 121 151 Z"
     ).marker({
         'x': 0,
@@ -188,17 +222,15 @@ def _arrow():
         'orient': "auto" 
     })
 
-def _handle(x=0, y=50, size=90, capacity=0, refid=None, marker=None):
+def _handle(x=0, y=50, size=90, capacity=0, refid=None):
     """ add element for UI interaction """
 
-    handle_id = '%s-%s' % (refid, marker)
-
-    element = _PAPER.circle({
+    el = PAPER.circle({
         'cx': x,
         'cy': y,
         'r': (size/2)
     }).attr({
-        'id': handle_id,
+        'id': refid,
         'class': 'handle',
         'fill': '#facade',
         'fill-opacity': '0.5',
@@ -206,7 +238,7 @@ def _handle(x=0, y=50, size=90, capacity=0, refid=None, marker=None):
         'orient': 0 
     })
 
-    SYMBOLS[handle_id] = element
+    SYMBOLS[refid] = el
 
     def _drag_start(*args):
         # TODO redraw element
@@ -214,24 +246,21 @@ def _handle(x=0, y=50, size=90, capacity=0, refid=None, marker=None):
 
     def _drag_end(*args):
         # TODO redraw element
+        reload()
         console.log(args)
 
     def _move(dx, dy, x, y, event):
         _tx = 't %i %i' % (dx, dy)
-        element.transform(_tx)
+        el.transform(_tx)
     
-    if marker == 'start':
-       element.drag(_move, _drag_start, _drag_end)
+    el.drag(_move, _drag_start, _drag_end)
 
-    if marker == 'end':
-       element.drag(_move, _drag_start, _drag_end)
-
-    return element
+    return el
 
 def _place(x=25, y=50, size=30, capacity=0):
     """ add place to petri-net """
 
-    return _PAPER.circle({
+    return PAPER.circle({
         'cx': x,
         'cy': y,
         'r': (size/2)
@@ -257,7 +286,7 @@ def _place(x=25, y=50, size=30, capacity=0):
 def _transition(x=14, y=20, width=14, height=40, rx=0, ry=0):
     """ add transition to petri-net """
 
-    return _PAPER.rect({
+    return PAPER.rect({
         'x': x,
         'y': y,
         'width': width,

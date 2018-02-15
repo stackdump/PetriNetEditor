@@ -30,6 +30,6 @@ import net
 def __onload():
     """ init config and connections """
     dsl._get(window.Bitwrap.config, dsl.__onload)
-    net.__onload()
+    net.__onload(dsl)
 
 __onload()
