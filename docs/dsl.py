@@ -16,7 +16,7 @@ def __onload(config):
     global _CFG
     global _ENDPOINT
     global _WS
-    _CFG = json.loads(config.response)
+    _CFG = config
     _ENDPOINT = _CFG['endpoint']
 
     if 'use_websocket' not in _CFG or not _CFG['use_websocket']:
