@@ -81,10 +81,11 @@ def render(scale=1.3):
 
     # draw places
     for pl in places:
+
         _handle(
             x=float(pl.node.attributes.x2.value),
             y=float(pl.node.attributes.y2.value),
-            refid=None,
+            refid=pl.data('label'),
             symbol='place'
         )
 
@@ -93,7 +94,7 @@ def render(scale=1.3):
         _handle(
             x=float(tx.node.attributes.x2.value),
             y=float(tx.node.attributes.y2.value),
-            refid=None,
+            refid=pl.data('label'),
             symbol='transition'
         )
 
@@ -148,6 +149,7 @@ def _node(x, y, label=None, symbol=None):
 
     point_el= _point(x=x, y=y, refid=label)
     point_el.data('symbol', symbol)
+    point_el.data('label', label)
 
     SYMBOLS[label] = point_el
     return point_el
@@ -259,6 +261,7 @@ def _arrow():
 
 def _handle(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
     """ add element for UI interaction """
+    _id = refid + '-handle'
 
     if symbol == 'place':
         el = PAPER.circle({
@@ -266,8 +269,8 @@ def _handle(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
             'cy': y,
             'r': (size/2)
         }).attr({
-            'id': refid,
-            'class': 'handle',
+            'id': _id,
+            'class': symbol,
             'fill': '#FFF',
             'fill-opacity': 1,
             'stroke': '#000',
@@ -281,7 +284,8 @@ def _handle(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
             'width': 10,
             'height': 34,
         }).attr({
-            'class': 'transition',
+            'id': _id,
+            'class': symbol,
             'fill': '#000',
             'fill-opacity': 1,
             'stroke': '#000',
@@ -289,7 +293,8 @@ def _handle(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
             'orient': 0 
         })
 
-    SYMBOLS[refid] = el
+    el.data('refid', refid)
+    SYMBOLS[_id] = el
 
     def _drag_start(*args):
         # TODO redraw element
