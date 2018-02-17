@@ -14,7 +14,7 @@ development
 
 **Start DB and Broker**
 
-    docker-compose up -d bitwrap-postgres bitwrap-rabbit
+    docker-compose up -d postgres rabbit
 
 **Access Rabbit admin**
 
@@ -22,7 +22,7 @@ development
 
 **Use Postgres cli**
 
-    docker-compose exec bitwrap-postgres bash -c 'psql -U postgres'
+    docker-compose exec postgres bash -c 'psql -U postgres'
 
 **Add some Brython**
 

@@ -1,28 +1,22 @@
-Thu Feb 15 20:59:00 CST 2018
+Sat Feb 17 11:11:46 CST 2018
 
 WIP
 ---
-* fix marker spacing
-* attach drag behaviors to _handler
-  * should transform graphic while moving
-  * should move nodes and redraw after drag stop
+
+* should be able to add elements from gui
 
 BACKLOG
 -------
-* allow petri-net json to be written back to disk
-  * as PNML
-
-* build out Petri-Net editor
-  * render petri-net from machine def
-  * support native bitwrap-machine format
-  * support downloads as <pnml>.xml
-  * should be able to add elements from brython console
 
 * editor features
   * allow edits from console
   * allow save to local storage
   * allow download as pnml
   * draging an element should change the position in the PNML/json
+
+* should redraw only pieces that have moved
+
+* should properly render tokens
 
 * simulator(eventstore)
   * hilight live transitions
@@ -32,11 +26,16 @@ BACKLOG
 ICEBOX
 ------
 
+* allow petri-net json to be written back to disk
+  * as PNML
+  * support downloads as <pnml>.xml
+
 * code simulator(event handler)
   * use the websocket as an upstream source of events
   * allow an end user to develop an event handler that can
     * run in the browser
     * download as .py and run on server 'publish'
+
 
 * ethereum smart contract simulator
 

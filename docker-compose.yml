@@ -1,7 +1,7 @@
 ---
 version: '2'
 services:
-  bitwrap-postgres:
+  postgres:
     image: postgres:9.6
     hostname: bitwrap-postgres
     ports:
@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: bitwrap
 
-  bitwrap-rabbit:
+  rabbit:
     image: rabbitmq:3-management
     hostname: bitwrap-rabbit
     ports:
@@ -20,7 +20,7 @@ services:
       RABBITMQ_DEFAULT_USER: bitwrap
       RABBITMQ_DEFAULT_PASS: bitwrap
 
-  bitwrap-api:
+  brython-api:
     image: stackdump/bitwrap-brython:dev
     hostname: txbitwrap
     command: api
@@ -35,5 +35,5 @@ services:
       AMQP_USER: bitwrap
       AMQP_PASS: bitwrap
     depends_on:
-      - bitwrap-rabbit
-      - bitwrap-postgres
+      - rabbit
+      - postgres
