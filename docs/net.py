@@ -29,6 +29,10 @@ elements and network state
 def __onload(ctx):
     """ use snap to begin creating an SVG """
     ctx.machine('octoe', callback=load)
+    window.jQuery('.ctl').on('click', control_handler)
+
+def control_handler(event):
+    console.log(event.target.text)
 
 def load(res):
     """ store requested PNML and render as SVG """

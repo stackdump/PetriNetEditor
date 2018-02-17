@@ -27,35 +27,23 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js" crossorigin="anonymous"></script>
 
-    <script> var Bitwrap = { config: "{{ app_root }}/config/default.json" }</script>
+    <script> var Bitwrap = { config: "{{ app_root }}/config/default.json" } </script>
 
 </head>
 <body onload="brython(1)">
-  <div id="dialog" title="Bitwrap-Brython">
-    <p>
-       Planned Features
-       <ul>
-         <li>Bitwrap Eventstore client(done)</li>
-         <li>Python terminal(wip)</li>
-         <li>UI cusomization and tuning(wip)</li>
-         <li>Tools for development(todo)</li>
-         <li>Petri-Net Editor(todo)</li>
-         <li>Admin tools for maintenance(todo)</li>
-         <li>Reporting and Visualization(todo)</li>
-         <li>Petri-Net Simulator(todo)</li>
-       </ul>
-    </p>
-  </div>
   <div id="tabs">
     <div class="widget">
       <fieldset>
         <legend>Petri-Net</legend>
         <div class="controlgroup">
-          <button id="place">place</button>
-          <button id="transition">transition</button>
-          <button id="arc">arc</button>
-          <button id="select">select</button>
-          <button id="exec">exec</button>
+          <button class="ctl" id="place">place</button>
+          <button class="ctl" id="transition">transition</button>
+          <button class="ctl" id="arc">arc</button>
+          <button class="ctl" id="select">select</button>
+          <button class="ctl" id="inc_token">+token</button>
+          <button class="ctl" id="dec_token">-token</button>
+          <button class="ctl" id="exec">exec</button>
+          <button class="ctl" id="halt">halt</button>
         </div>
       </fieldset>
     </div>
@@ -67,7 +55,6 @@
     <!-- init the ui -->
     <script>
       $('#tabs').tabs();
-      //$('#dialog').dialog();
     </script>
 
     <!-- run the console app -->
