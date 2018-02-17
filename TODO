@@ -1,33 +1,28 @@
-Sat Feb 17 11:11:46 CST 2018
+Sat Feb 17 15:34:35 CST 2018
 
 WIP
 ---
-
-* should be able to add elements from gui
-
-BACKLOG
--------
-
-* editor features
-  * allow edits from console
-  * allow save to local storage
-  * allow download as pnml
-  * draging an element should change the position in the PNML/json
-
-* should redraw only pieces that have moved
-
-* should properly render tokens
 
 * simulator(eventstore)
   * hilight live transitions
   * should store/display history
   * provide replay, fwd back of event stream
 
+BACKLOG
+-------
+
+* editor features
+  * allow edits from console
+
+* should be able to add elements from gui - bind to buttons
+
+* should redraw only pieces that have moved
+
 ICEBOX
 ------
 
 * allow petri-net json to be written back to disk
-  * as PNML
+  * allow save to local storage in browser as PNML
   * support downloads as <pnml>.xml
 
 * code simulator(event handler)
@@ -36,13 +31,7 @@ ICEBOX
     * run in the browser
     * download as .py and run on server 'publish'
 
-
-* ethereum smart contract simulator
-
-* Port octoe-game create + new game WS bindings
-  * perhaps echo ASCII-Art board to console
-
-* DEMO: Tic-tac-toe from Brython console
+* hyperledger/ethereum smart contract simulator
 
 * add a build step to compile python to js in ./docs
 

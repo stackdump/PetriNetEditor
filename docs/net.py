@@ -30,6 +30,15 @@ def __onload(ctx):
     """ use snap to begin creating an SVG """
     ctx.machine('octoe', callback=load)
 
+def load(res):
+    """ store requested PNML and render as SVG """
+    global SCHEMA
+
+    pnet  = json.loads(res.text)
+    SCHEMA = pnet['machine']['name']
+    NETS[SCHEMA] = pnet['machine']
+    reload()
+
 def reset(callback=None):
     """ clear SVG and prepare markers """
     global PAPER
@@ -43,15 +52,6 @@ def reset(callback=None):
 
     if callback:
         callback()
-
-def load(res):
-    """ store requested PNML and render as SVG """
-    global SCHEMA
-
-    pnet  = json.loads(res.text)
-    SCHEMA = pnet['machine']['name']
-    NETS[SCHEMA] = pnet['machine']
-    reload()
 
 def reload():
     """ reset then render """
@@ -75,6 +75,8 @@ class PNet(object):
         self.place_names = {}
         self.place_defs = {}
 
+        self.token_ledger = {}
+
         self.arcs = []
         self.arc_defs = {}
 
@@ -89,7 +91,6 @@ class PNet(object):
         """ rebuild data points """
 
         for name, attr in NETS[SCHEMA]['places'].items():
-
             self.place_names[attr['offset']] = name
             self.place_defs[name] = attr
 
@@ -118,6 +119,8 @@ class PNet(object):
         """ draw points used to align other elements """
 
         for name, attr in self.place_defs.items():
+            self.token_ledger[name] = attr['inital']
+
             el = place(attr['position'][0], attr['position'][1], label=name)
             el.data('offset', attr['offset'])
             el.data('inital', attr['inital']) 
@@ -127,7 +130,6 @@ class PNet(object):
         for name, attr in self.transition_defs.items():
             el = transition(attr['position'][0], attr['position'][1], label=name)
             self.transitions[name] = el
-
 
     def render_handles(self):
         """ draw places and transitions """
@@ -328,47 +330,62 @@ def _tokens(sym):
 
     _id = refid + '-tokens'
 
-    value = float(SYMBOLS[sym].data('tokens'))
+    value = int(INSTANCE.token_ledger[sym])
 
     # TODO: draw numbers <= 5 as dots
-    # otherwise add txt element
-    # may consider using _point() start marker? or duplicate
-    return PAPER.circle({
-        'cx': float(_attr(sym).x2.value),
-        'cy': float(_attr(sym).y2.value),
-        'r': 2
-    }).attr({
-        'id': _id,
-        'class': 'tokens',
-        'fill': '#000',
-        'fill-opacity': 1,
-        'stroke': '#000',
-        'orient': 0 
-    })
+    if value == 1:
 
-    console.log(_id, value)
+        return PAPER.circle({
+            'cx': float(_attr(sym).x2.value),
+            'cy': float(_attr(sym).y2.value),
+            'r': 2
+        }).attr({
+            'id': _id,
+            'class': 'tokens',
+            'fill': '#000',
+            'fill-opacity': 1,
+            'stroke': '#000',
+            'orient': 0 
+        })
 
-    # TODO draw a label and add counter
+    if value == 0:
+        _txt = ''
+    else:
+        _txt = str(value)
 
-def _handle(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
+    return PAPER.text(float(_attr(sym).x2.value), float(_attr(sym).y2.value), _txt)
+
+def _label(sym):
+    """ labels """
+
+    _id = refid + '-label'
+
+    _txt = SYMBOLS[sym].data('label')
+
+    el = PAPER.text(float(_attr(sym).x2.value) - 10, float(_attr(sym).y2.value) + 35, _txt)
+    el.attr({ 'class': 'label', 'style': 'font-size: 12px;'})
+    return el
+
+def _handle(x=0, y=50, size=40, refid=None, symbol=None):
     """ add group of elements needed for UI interaction """
     _id = refid + '-handle'
 
     point = SYMBOLS[refid]
-    handle = PAPER.g(symbol)
+    handle = PAPER.g(point, _label(refid))
 
     if symbol == 'place':
-       el = _place(x=x, y=y, size=size, capacity=capacity, refid=refid, symbol=symbol)
+       el = _place(x=x, y=y, size=size, refid=refid, symbol=symbol)
        el.data('refid', refid)
        token_el = _tokens(refid)
+       INSTANCE.token_ledger[refid]
        handle.add(el, token_el)
+
     elif symbol == 'transition':
-       el = _transition(x=x, y=y, size=size, capacity=capacity, refid=refid, symbol=symbol)
-       el.data('refid', refid)
+       el = _transition(x=x, y=y, size=size, refid=refid, symbol=symbol)
        handle.add(el)
 
+    el.data('refid', refid)
     SYMBOLS[_id] = handle
-
 
     def _drag_start(*args):
         pass
@@ -394,7 +411,7 @@ def _handle(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
 
     return handle
 
-def _transition(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
+def _transition(x=0, y=50, size=40, refid=None, symbol=None):
     """ draw transition """
 
     _id = '%s-%s' % (refid, symbol)
@@ -414,7 +431,7 @@ def _transition(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
         'orient': 0 
     })
 
-def _place(x=0, y=50, size=40, capacity=0, refid=None, symbol=None):
+def _place(x=0, y=50, size=40, refid=None, symbol=None):
     """ draw place """
 
     _id = '%s-%s' % (refid, symbol)
