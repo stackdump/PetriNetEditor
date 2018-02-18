@@ -3,13 +3,15 @@ Sat Feb 17 15:34:35 CST 2018
 WIP
 ---
 
-* simulator(eventstore)
+* simulator(Petri-Net)
   * hilight live transitions
-  * should store/display history
-  * provide replay, fwd back of event stream
 
 BACKLOG
 -------
+
+* simulator(eventstore)
+  * should store/display history
+  * provide replay, fwd back of event stream
 
 * editor features
   * allow edits from console
