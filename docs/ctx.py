@@ -26,12 +26,12 @@ from dsl import subscribe, unsubscribe, echo # util
 from dsl import load, create, destroy # modify stream
 from dsl import schemata, state, machine, dispatch, stream, event, exists # use stream
 
-import net
+import ctl
 
 def __onload(req):
     """ init config and connections """
     config = json.loads(req.response)
     dsl.__onload(config)
-    net.__onload(dsl)
+    ctl.__onload(dsl)
 
 dsl._get(window.Bitwrap.config, __onload)
