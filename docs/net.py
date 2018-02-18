@@ -29,8 +29,13 @@ elements and network state
 
 class PNet(object):
 
-    def __init__(self):
+    def __init__(self, control):
         """ persistent net object """
+
+        global INSTANCE
+        INSTANCE = self
+
+        self.ctl = control
 
         self.places = {}
         self.place_names = {}

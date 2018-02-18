@@ -2,6 +2,10 @@ from browser import window, document, console
 import net
 import json
 
+CTX = None
+"""
+Bitwrap context
+"""
 
 CTL = None
 """
@@ -11,9 +15,12 @@ UI control interface
 def __onload(ctx):
     """ use snap to begin creating an SVG """
     global CTL
+    global CTX
+
+    CTX = ctx
     CTL = Control()
 
-    ctx.machine('octoe', callback=load)
+    CTX.machine('octoe', callback=load)
     window.jQuery('.ctl').on('click', CTL.handler)
 
 class Control(object):
@@ -116,6 +123,6 @@ def reset(callback=None):
 def render():
     """ development examples """
     if not net.INSTANCE:
-        net.INSTANCE = net.PNet()
+        net.PNet(CTL)
 
     net.INSTANCE.render()
