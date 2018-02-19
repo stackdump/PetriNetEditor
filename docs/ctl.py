@@ -15,114 +15,94 @@ UI control interface
 def __onload(ctx):
     """ use snap to begin creating an SVG """
     global CTL
+    CTL = Editor()
+
+    window.jQuery('.select').on('click', CTL.select)
+    window.jQuery('.symbol').on('click', CTL.symbol)
+    window.jQuery('.tool').on('click', CTL.tool)
+    window.jQuery('.simulator').on('click', CTL.simulator)
+
     global CTX
-
     CTX = ctx
-    CTL = Control()
+    CTX.machine('octoe', callback=CTL.load)
 
-    CTX.machine('octoe', callback=load)
-    window.jQuery('.ctl').on('click', CTL.handler)
-
-class Control(object):
+class Controller(object):
     """ Provide interface for UI actions """
 
+    def load(self, res):
+        """ store requested PNML and render as SVG """
+        pnet  = json.loads(res.text)
+        net.SCHEMA = pnet['machine']['name']
+        net.NETS[net.SCHEMA] = pnet['machine']
+        CTL.reset(callback=CTL.render)
+
+    def reset(self, callback=None):
+        """ clear SVG and prepare markers """
+        net.PAPER
+        
+        if not net.PAPER:
+            net.PAPER=window.Snap('#net')
+
+        net.PAPER.clear()
+        net._load_symbols()
+        net._origin()
+
+        if callback:
+            callback()
+
+    def render(self):
+        """ development examples """
+        if not net.INSTANCE:
+            net.PNet(CTL)
+
+        net.INSTANCE.render()
+
+class Editor(Controller):
+
     def __init__(self):
-        self.selected = None
+        self.callback = self.on_select
 
-        self.commands = {
-            'place': self.place,
-            'transition': self.transition,
-            'arc': self.arc,
-            'select': self.select,
-            '+token': self.inc_token,
-            '-token': self.dec_token,
-            'exec': self.start,
-            'halt': self.stop
-        }
+    def dispatch(self, event):
+        """ handle mouse events """
+        self.callback(event)
+        # TODO: use self.selected
 
-    def handler(self, event):
-        """ map input event to function call """
-        try:
-            cmd = str(event.target.text)
-            _call = self.commands[cmd]
-            self.selected = cmd
-            _call(event)
-        except:
-            console.log('ctl_error', event)
-
-    def log(self, event):
-        """ log event to console """
-        console.log(event.target.text)
-
-    def place(self, event):
-        """ add a place on every click """
-        self.log(event)
-
-    def transition(self, event):
-        """ add a transtion on every click """
-        self.log(event)
-
-    def arc(self, event):
-        """
-        operate as a 'selector'
-        where an arc is drawn between start/end clicks
-
-        NOTE: only valid if start and end are different types place/transion
-        """
-        self.log(event)
+    def on_select(self, event):
+        """ callback to show attributes for selected element """
+        refid, symbol = str(event.target.id).split('-')
+        console.log(refid, symbol)
 
     def select(self, event):
-        """ select an item to edit """
-        self.log(event)
+        self.callback = self.on_select
 
-    def inc_token(self, event):
-        """ add 1 token from inital marking """
-        # REVIEW: ? should this work on arcs also?
-        self.log(event)
+    def symbol(self, event):
+        # TODO: should add new symbol
+        # this may not need on_symbol callback
+        # perhaps add and then go back to select 
+        self.callback = self.on_select
 
-    def dec_token(self, event):
-        """ remove 1 token from inital marking """
-        # REVIEW: ? should this work on arcs also?
-        self.log(event)
+    def tool(self, event):
+        """ modify existing symbol on net """
+        # TODO: find in SYMBOL table and modify
+        console.log(event.target.text)
 
-    def start(self, event):
-        """ start the simulator """
-        # TODO:
-        # 1. reindex allowable actions for INSTANCE
-        # 2. hilight 'live' transitions
-        self.log(event)
+    def on_trigger(self, event):
+        """ callback to trigger live transition during simulation """
+        refid, symbol = str(event.target.id).split('-')
 
-    def stop(self, event):
-        """ stop the simulator """
-        self.log(event)
+        if not symbol == 'transition':
+            return
 
+        # TODO: change token balance and update state machine
+        # REVIEW: where should state vector live?
 
-def load(res):
-    """ store requested PNML and render as SVG """
-    global SCHEMA
+        console.log(net.SYMBOLS[refid])
 
-    pnet  = json.loads(res.text)
-    net.SCHEMA = pnet['machine']['name']
-    net.NETS[net.SCHEMA] = pnet['machine']
-    reset(callback=render)
+    def simulator(self, event):
+        """ control start/stop simulation mode """
+        # hilight all live transitions
+        # selecting a live transition should change token balance
+        # and then re-render to hilight live transitions again
+        console.log(event.target.text)
+        self.callback = self.on_trigger
 
-def reset(callback=None):
-    """ clear SVG and prepare markers """
-    net.PAPER
-    
-    if not net.PAPER:
-        net.PAPER=window.Snap('#net')
-
-    net.PAPER.clear()
-    net._load_symbols()
-    net._origin()
-
-    if callback:
-        callback()
-
-def render():
-    """ development examples """
-    if not net.INSTANCE:
-        net.PNet(CTL)
-
-    net.INSTANCE.render()

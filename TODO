@@ -1,10 +1,12 @@
-Sat Feb 17 15:34:35 CST 2018
+Sun Feb 18 23:27:03 CST 2018
 
 WIP
 ---
 
 * simulator(Petri-Net)
   * hilight live transitions
+  * add a way to select Arcs
+    * current selection system relies on _handle elements
 
 BACKLOG
 -------

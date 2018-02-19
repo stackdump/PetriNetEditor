@@ -26,6 +26,10 @@ INSTANCE = None
 elements and network state
 """
 
+CTL = None
+"""
+reference to controller
+"""
 
 class PNet(object):
 
@@ -35,7 +39,8 @@ class PNet(object):
         global INSTANCE
         INSTANCE = self
 
-        self.ctl = control
+        global CTL
+        CTL = control
 
         self.places = {}
         self.place_names = {}
@@ -353,8 +358,8 @@ def _handle(x=0, y=50, size=40, refid=None, symbol=None):
     el.data('refid', refid)
     SYMBOLS[_id] = handle
 
-    def _drag_start(*args):
-        pass
+    def _drag_start(x, y, mousevent):
+        CTL.dispatch(mousevent)
 
     def _drag_end(mouseevent):
 
@@ -365,9 +370,9 @@ def _handle(x=0, y=50, size=40, refid=None, symbol=None):
             elif symbol == 'transition':
                 INSTANCE.transition_defs[refid]['position'] = new_coords
 
-            render() # FIXME: should be a reference to Control ??
+            CTL.render() # FIXME: should be a reference to Control ??
 
-        reset(callback=_move_and_redraw)
+        CTL.reset(callback=_move_and_redraw)
 
     def _dragging(dx, dy, x, y, event):
         _tx = 't %i %i' % (dx, dy)
