@@ -359,7 +359,14 @@ def _tokens(sym):
     else:
         _txt = str(value)
 
-    return PAPER.text(float(_attr(sym).x2.value), float(_attr(sym).y2.value), _txt)
+    return PAPER.text(
+        float(_attr(sym).x2.value),
+        float(_attr(sym).y2.value),
+        _txt
+    ).attr({
+        'id': refid + '-txtlabel',
+        'class': 'txtlabel'
+    })
 
 def _label(sym):
     """ labels """

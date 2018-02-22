@@ -8,6 +8,11 @@ class Simulation(object):
 
     def trigger(self, event):
         """ callback to trigger live transition during simulation """
+        target_id = str(event.target.id)
+
+        if not self.ctl.is_selectable(target_id):
+            return
+
         refid, symbol = str(event.target.id).split('-')
 
         if not self.pnet or not symbol == 'transition':
@@ -19,5 +24,6 @@ class Simulation(object):
             self.ctl.reset(callback=self.ctl.render)
 
     def hilight_live_transitions(self):
+        # FIXME - actually use this
         pass
 

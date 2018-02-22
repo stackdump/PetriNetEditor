@@ -18,6 +18,7 @@ def __onload(ctx):
     global CTL
     CTL = Editor()
 
+    window.jQuery('#net').on('click', CTL.insert)
     window.jQuery('.select').on('click', CTL.select)
     window.jQuery('.symbol').on('click', CTL.symbol)
     window.jQuery('.tool').on('click', CTL.tool)
@@ -35,7 +36,7 @@ class Controller(object):
         pnet  = json.loads(res.text)
         net.SCHEMA = pnet['machine']['name']
         net.NETS[net.SCHEMA] = pnet['machine']
-        CTL.reset(callback=CTL.render)
+        self.reset(callback=self.render)
 
     def reset(self, callback=None):
         """ clear SVG and prepare markers """
@@ -54,7 +55,7 @@ class Controller(object):
     def render(self):
         """ development examples """
         if not net.INSTANCE:
-            net.PNet(CTL)
+            net.PNet(self)
 
         net.INSTANCE.render()
 
@@ -63,32 +64,47 @@ class Editor(Controller):
     def __init__(self):
         self.callback = self.on_select
         self.move_enabled = True
+        self.selected_insert_symbol = None
         self.simulation = None
+
+    def is_selectable(self, target_id):
+        console.log(target_id)
+
+        if '-' not in target_id:
+            return False
+        else:
+            return True
 
     def drag_start(self, event):
         """ handle mouse events """
         self.callback(event)
-        # TODO: use self.selected
 
     def on_select(self, event):
         """ callback to show attributes for selected element """
-        refid, symbol = str(event.target.id).split('-')
+        target_id = str(event.target.id)
+
+        if not self.is_selectable(target_id):
+            return
+
+        refid, symbol = target_id.split('-')
         console.log(refid, symbol)
 
     def select(self, event):
         self.move_enabled = True
+        self.selected_insert_symbol = None
         self.callback = self.on_select
 
     def symbol(self, event):
-        # TODO: should add new symbol
-        # this may not need on_symbol callback
-        # perhaps add and then go back to select 
-        self.callback = self.on_select
+        sym = str(event.target.id)
+        self.selected_insert_symbol = sym
 
-    def tool(self, event):
-        """ modify existing symbol on net """
-        # TODO: find in SYMBOL table and modify properties
-        console.log(event.target.text)
+    def insert(self, event):
+        if not self.selected_insert_symbol:
+            return
+
+        new_coords = [event.offsetX, event.offsetY]
+        # TODO: make call to insert new symbol in INSTANCE
+        console.log(event, 'insert-' + self.selected_insert_symbol)
 
     def simulator(self, event):
         """ control start/stop simulation mode """
@@ -96,3 +112,15 @@ class Editor(Controller):
         self.simulation = sim.Simulation(net.INSTANCE, self)
         self.callback = self.simulation.trigger
         console.log(event.target.text)
+
+    def tool(self, event):
+        """ modify existing symbol on net """
+        target_id = str(event.target.id)
+
+        if target_id == 'arc':
+            # TODO: should put into mode where we select input arc
+            self.move_enabled = False
+            console.log('start arc creation') # next selected handle is 'start' 
+
+        # TODO: should allow another tool mode that
+        # allows element attributes to be edited from the UI
