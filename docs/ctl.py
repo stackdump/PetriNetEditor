@@ -1,5 +1,6 @@
 from browser import window, document, console
 import net
+import sim
 import json
 
 CTX = None
@@ -61,8 +62,10 @@ class Editor(Controller):
 
     def __init__(self):
         self.callback = self.on_select
+        self.move_enabled = True
+        self.simulation = None
 
-    def dispatch(self, event):
+    def drag_start(self, event):
         """ handle mouse events """
         self.callback(event)
         # TODO: use self.selected
@@ -73,6 +76,7 @@ class Editor(Controller):
         console.log(refid, symbol)
 
     def select(self, event):
+        self.move_enabled = True
         self.callback = self.on_select
 
     def symbol(self, event):
@@ -83,26 +87,12 @@ class Editor(Controller):
 
     def tool(self, event):
         """ modify existing symbol on net """
-        # TODO: find in SYMBOL table and modify
+        # TODO: find in SYMBOL table and modify properties
         console.log(event.target.text)
-
-    def on_trigger(self, event):
-        """ callback to trigger live transition during simulation """
-        refid, symbol = str(event.target.id).split('-')
-
-        if not symbol == 'transition':
-            return
-
-        # TODO: change token balance and update state machine
-        # REVIEW: where should state vector live?
-
-        console.log(net.SYMBOLS[refid])
 
     def simulator(self, event):
         """ control start/stop simulation mode """
-        # hilight all live transitions
-        # selecting a live transition should change token balance
-        # and then re-render to hilight live transitions again
+        self.move_enabled = False
+        self.simulation = sim.Simulation(net.INSTANCE, self)
+        self.callback = self.simulation.trigger
         console.log(event.target.text)
-        self.callback = self.on_trigger
-

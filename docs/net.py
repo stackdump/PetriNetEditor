@@ -46,6 +46,7 @@ class PNet(object):
         self.place_names = {}
         self.place_defs = {}
 
+        self.vector_size = 0
         self.token_ledger = {}
 
         self.arcs = []
@@ -54,9 +55,40 @@ class PNet(object):
         self.transition_defs = {}
         self.transitions = {}
 
-        self.handles = []
+        self.handles = {}
         self.reindex()
-        self.vector_size = 0
+
+    def state_vector(self):
+        """ return current state vector from token_ledger """
+        vector = [0] * self.vector_size
+
+        for name, attr  in NETS[SCHEMA]['places'].items():
+            vector[attr['offset']] = self.token_ledger[name]
+
+        return vector
+
+    def commit(self, action):
+        """ return current state vector from token_ledger """
+
+        out = [0] * self.vector_size
+        state = self.state_vector()
+        txn = net.NETS[net.SCHEMA]['transitions'][refid]['delta']
+
+        for i in range(0, self.vector_size):
+            _sum = state[i] + txn[i]
+            out[i] = _sum
+            if _sum < 0:
+                return False
+
+        self.update(out)
+
+        return True
+
+    def update(self, statevector):
+        """ set new statevector """
+
+        for name, attr in NETS[SCHEMA]['places'].items():
+            self.token_ledger[name] = statevector[attr['offset']]
 
     def reindex(self):
         """ rebuild data points """
@@ -64,6 +96,10 @@ class PNet(object):
         for name, attr in NETS[SCHEMA]['places'].items():
             self.place_names[attr['offset']] = name
             self.place_defs[name] = attr
+
+            if name not in self.token_ledger:
+                self.token_ledger[name] = attr['inital']
+
 
         self.vector_size = len(self.place_names)
 
@@ -82,48 +118,47 @@ class PNet(object):
 
     def render(self):
         """ draw the petri-net """
-        self.render_nodes()
-        self.render_handles()
-        self.render_arcs()
+        self.draw_nodes()
+        self.draw_handles()
+        self.draw_arcs()
 
-    def render_nodes(self):
+    def draw_nodes(self):
         """ draw points used to align other elements """
 
         for name, attr in self.place_defs.items():
-            self.token_ledger[name] = attr['inital']
 
             el = place(attr['position'][0], attr['position'][1], label=name)
             el.data('offset', attr['offset'])
             el.data('inital', attr['inital']) 
-            el.data('tokens', attr['inital'])
+
             self.places[name] = el
 
         for name, attr in self.transition_defs.items():
             el = transition(attr['position'][0], attr['position'][1], label=name)
             self.transitions[name] = el
 
-    def render_handles(self):
+    def draw_handles(self):
         """ draw places and transitions """
 
-        for _, pl in self.places.items():
-            el = _handle(
+        for label, pl in self.places.items():
+
+            self.handles[label] = _handle(
                 x=float(pl.node.attributes.x2.value),
                 y=float(pl.node.attributes.y2.value),
-                refid=pl.data('label'),
+                refid=label,
                 symbol='place'
             )
-            self.handles.append(el)
 
-        for _, tx in self.transitions.items():
-            el = _handle(
+        for label, tx in self.transitions.items():
+
+            self.handles[label] = _handle(
                 x=float(tx.node.attributes.x2.value),
                 y=float(tx.node.attributes.y2.value),
-                refid=tx.data('label'),
+                refid=label,
                 symbol='transition'
             )
-            self.handles.append(el)
 
-    def render_arcs(self):
+    def draw_arcs(self):
         """ draw the petri-net """
 
         for txn, attrs in self.arc_defs.items():
@@ -359,9 +394,11 @@ def _handle(x=0, y=50, size=40, refid=None, symbol=None):
     SYMBOLS[_id] = handle
 
     def _drag_start(x, y, mousevent):
-        CTL.dispatch(mousevent)
+        CTL.drag_start(mousevent)
 
     def _drag_end(mouseevent):
+        if not CTL.move_enabled:
+            return
 
         def _move_and_redraw():
             new_coords = [mouseevent.offsetX, mouseevent.offsetY]
@@ -375,6 +412,9 @@ def _handle(x=0, y=50, size=40, refid=None, symbol=None):
         CTL.reset(callback=_move_and_redraw)
 
     def _dragging(dx, dy, x, y, event):
+        if not CTL.move_enabled:
+            return
+
         _tx = 't %i %i' % (dx, dy)
         handle.transform(_tx)
     
