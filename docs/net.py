@@ -58,36 +58,10 @@ class PNet(object):
         self.handles = {}
         self.reindex()
 
-    def state_vector(self):
-        """ return current state vector from token_ledger """
-        vector = [0] * self.vector_size
-
-        for name, attr  in NETS[SCHEMA]['places'].items():
-            vector[attr['offset']] = self.token_ledger[name]
-
-        return vector
-
-    def commit(self, action):
-        """ return current state vector from token_ledger """
-
-        out = [0] * self.vector_size
-        state = self.state_vector()
-        txn = net.NETS[net.SCHEMA]['transitions'][refid]['delta']
-
-        for i in range(0, self.vector_size):
-            _sum = state[i] + txn[i]
-            out[i] = _sum
-            if _sum < 0:
-                return False
-
-        self.update(out)
-
-        return True
-
     def update(self, statevector):
         """ set new statevector """
 
-        for name, attr in NETS[SCHEMA]['places'].items():
+        for name, attr in self.place_defs.items():
             self.token_ledger[name] = statevector[attr['offset']]
 
     def reindex(self):
@@ -114,7 +88,7 @@ class PNet(object):
                 elif attr['delta'][i] < 0:
                     self.arc_defs[name]['from'].append(self.place_names[i])
 
-            self.transition_defs[name] = { 'position': attr['position'] }
+            self.transition_defs[name] = attr
 
     def render(self):
         """ draw the petri-net """
@@ -427,7 +401,7 @@ def _handle(x=0, y=50, size=40, refid=None, symbol=None):
     
     handle.drag(_dragging, _drag_start, _drag_end)
 
-    return handle
+    return el
 
 def _transition(x=0, y=50, size=40, refid=None, symbol=None):
     """ draw transition """
@@ -442,7 +416,7 @@ def _transition(x=0, y=50, size=40, refid=None, symbol=None):
     }).attr({
         'id': _id,
         'class': symbol,
-        'fill': '#000',
+        'fill': 'black',
         'fill-opacity': 1,
         'stroke': '#000',
         'strokeWidth': 2,

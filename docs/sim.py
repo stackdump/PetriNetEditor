@@ -5,6 +5,41 @@ class Simulation(object):
         self.pnet = net
         self.ctl = control
         self.history = []
+        self.hilight_live_transitions()
+
+    def state_vector(self):
+        """ return current state vector from token_ledger """
+        vector = [0] * self.pnet.vector_size
+
+        for name, attr  in self.pnet.place_defs.items():
+            vector[attr['offset']] = self.pnet.token_ledger[name]
+
+        return vector
+
+    def commit(self, action, input_state=None, dry_run=False):
+        """ transform state_vector """
+        out = [0] * self.pnet.vector_size
+
+        if not input_state:
+            state = self.state_vector()
+        else:
+            state = input_state
+
+        txn = self.pnet.transition_defs[action]['delta']
+
+        for i in range(0, self.pnet.vector_size):
+            out[i] = state[i] + txn[i]
+            if out[i] < 0:
+                return False
+
+        if not dry_run:
+            self.pnet.update(out)
+
+        return True
+
+    def is_alive(self, action, from_state=None):
+        """ test that input transition can fire """
+        return  self.commit(action, input_state=from_state, dry_run=True)
 
     def trigger(self, event):
         """ callback to trigger live transition during simulation """
@@ -13,17 +48,25 @@ class Simulation(object):
         if not self.ctl.is_selectable(target_id):
             return
 
-        refid, symbol = str(event.target.id).split('-')
+        refid, symbol = target_id.split('-')
 
         if not self.pnet or not symbol == 'transition':
             return
 
-        if self.pnet.commit(refid):
+        if self.commit(refid):
             self.history.append(refid)
-            console.log(refid)
-            self.ctl.reset(callback=self.ctl.render)
+            self.ctl.reset(callback=self.redraw)
+
+    def redraw(self):
+        """ render SVG and hilight live transitions """
+        self.ctl.render()
+        self.hilight_live_transitions()
 
     def hilight_live_transitions(self):
-        # FIXME - actually use this
-        pass
+        """ visually indiciate which transitions can fire """
+        current_state = self.state_vector()
+
+        for action in self.pnet.transitions.keys():
+            if self.is_alive(action, from_state=current_state):
+                self.pnet.handles[action].attr({ 'fill': 'red' })
 

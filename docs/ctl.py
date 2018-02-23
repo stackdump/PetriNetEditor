@@ -90,15 +90,18 @@ class Editor(Controller):
         console.log(refid, symbol)
 
     def select(self, event):
+        """ enter select/move mode """
         self.move_enabled = True
         self.selected_insert_symbol = None
         self.callback = self.on_select
 
     def symbol(self, event):
+        """ enter insert symbol mode """
         sym = str(event.target.id)
         self.selected_insert_symbol = sym
 
     def insert(self, event):
+        """ insert a symbol into net """
         if not self.selected_insert_symbol:
             return
 
