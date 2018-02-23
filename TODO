@@ -1,25 +1,27 @@
-Wed Feb 21 22:20:47 CST 2018
+Fri Feb 23 04:04:20 CST 2018
 
 WIP
 ---
 
-* simulator(Petri-Net)
-  * hilight live transitions
-  * show history in GUI somehow
+should be able to perform simulation from console
 
 BACKLOG
 -------
 
 * simulator(eventstore)
-  * should store/display history
+  * should have a 'reset'
+    * txns are no longer hilighted
+    * & token_leger is reset to inital condition
+  * should redraw only pieces that have moved
+  * show history in GUI somehow
   * provide replay, fwd back of event stream
 
 * editor features
   * allow edits from console
-
-* should be able to add elements from gui - bind to buttons
-
-* should redraw only pieces that have moved
+  * missing insert symbols
+  * missing arc tool
+  * missing token +/- tool
+  * missing edit dialog for updating symbol attributes
 
 ICEBOX
 ------
@@ -34,8 +36,7 @@ ICEBOX
     * run in the browser
     * download as .py and run on server 'publish'
 
-* hyperledger/ethereum smart contract simulator
-
 * add a build step to compile python to js in ./docs
+  * see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
 
-* see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
+* hyperledger/ethereum smart contract simulator
