@@ -33,7 +33,7 @@ class Controller(object):
 
     def load(self, res):
         """ store requested PNML and render as SVG """
-        pnet  = json.loads(res.text)
+        pnet = json.loads(res.text)
         net.SCHEMA = pnet['machine']['name']
         net.NETS[net.SCHEMA] = pnet['machine']
         self.reset(callback=self.render)
@@ -107,7 +107,43 @@ class Editor(Controller):
 
         new_coords = [event.offsetX, event.offsetY]
         # TODO: make call to insert new symbol in INSTANCE
-        console.log(event, 'insert-' + self.selected_insert_symbol)
+
+        if self.selected_insert_symbol == 'place':
+            self._insert_place(new_coords)
+        else:
+            self._insert_transition(new_coords)
+
+        self.reset(self.render)
+
+    def _insert_place(self, coords):
+        size = net.INSTANCE.vector_size
+        net.INSTANCE.vector_size = size + 1
+
+        label = 'p%i' % size
+
+        console.log(coords, 'insert-place', label)
+
+        net.INSTANCE.place_defs[label] = {
+            'position': coords,
+            'inital': 0,
+            'offset': size
+        }
+
+        net.INSTANCE.token_ledger[label] = 0
+        # FIXME: should add padded 0's to all transitions
+
+    def _insert_transition(self, coords):
+        size = len(net.INSTANCE.transition_defs)
+
+        label = 't%i' % size
+
+        console.log(coords, 'insert-transition', label)
+
+        net.INSTANCE.transition_defs[label] = {
+            'position': coords,
+            'role': 'default',
+            'delta': [0] * net.INSTANCE.vector_size
+        }
 
     def simulator(self, event):
         """ control start/stop simulation mode """

@@ -1,9 +1,10 @@
-Fri Feb 23 04:04:20 CST 2018
+Fri Feb 23 22:48:53 CST 2018
 
 WIP
 ---
 
-should be able to perform simulation from console
+allow insert p/t symbols into net
+* KLUDGE: must pad out 0's for all transitions
 
 BACKLOG
 -------
@@ -18,7 +19,6 @@ BACKLOG
 
 * editor features
   * allow edits from console
-  * missing insert symbols
   * missing arc tool
   * missing token +/- tool
   * missing edit dialog for updating symbol attributes
