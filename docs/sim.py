@@ -57,6 +57,11 @@ class Simulation(object):
             self.history.append(refid)
             self.ctl.reset(callback=self.redraw)
 
+    def reset(self):
+        """ render SVG and hilight live transitions """
+        self.pnet.reset_tokens()
+        self.ctl.reset(callback=self.ctl.render)
+
     def redraw(self):
         """ render SVG and hilight live transitions """
         self.ctl.render()

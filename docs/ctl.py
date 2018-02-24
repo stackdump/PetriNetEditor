@@ -115,22 +115,24 @@ class Editor(Controller):
 
         self.reset(self.render)
 
-    def _insert_place(self, coords):
-        size = net.INSTANCE.vector_size
-        net.INSTANCE.vector_size = size + 1
+    def _insert_place(self, coords, inital=0):
+        _offset = net.INSTANCE.vector_size
+        net.INSTANCE.vector_size = _offset + 1
 
-        label = 'p%i' % size
+        label = 'p%i' % _offset
 
         console.log(coords, 'insert-place', label)
 
         net.INSTANCE.place_defs[label] = {
             'position': coords,
-            'inital': 0,
-            'offset': size
+            'inital': inital,
+            'offset': _offset
         }
 
-        net.INSTANCE.token_ledger[label] = 0
-        # FIXME: should add padded 0's to all transitions
+        net.INSTANCE.token_ledger[label] = inital
+
+        for name, attr in net.INSTANCE.transition_defs.items():
+            attr['delta'].append(0)
 
     def _insert_transition(self, coords):
         size = len(net.INSTANCE.transition_defs)
@@ -147,10 +149,19 @@ class Editor(Controller):
 
     def simulator(self, event):
         """ control start/stop simulation mode """
-        self.move_enabled = False
-        self.simulation = sim.Simulation(net.INSTANCE, self)
-        self.callback = self.simulation.trigger
-        console.log(event.target.text)
+        target_id = event.target.text
+        console.log(target_id)
+
+        if target_id == 'reset':
+            console.log('reset simulation')
+            if self.simulation:
+                self.simulation.reset()
+            self.callback = self.on_select
+            self.move_enabled = True
+        else:
+            self.move_enabled = False
+            self.simulation = sim.Simulation(net.INSTANCE, self)
+            self.callback = self.simulation.trigger
 
     def tool(self, event):
         """ modify existing symbol on net """
@@ -160,6 +171,33 @@ class Editor(Controller):
             # TODO: should put into mode where we select input arc
             self.move_enabled = False
             console.log('start arc creation') # next selected handle is 'start' 
+        elif target_id == 'delete':
+            self.callback = self.on_delete
 
-        # TODO: should allow another tool mode that
-        # allows element attributes to be edited from the UI
+    def on_delete(self, event):
+        """ callback when clicking elements when delete tool is active """
+        target_id = str(event.target.id)
+
+        console.log(target_id)
+        if not self.is_selectable(target_id):
+            return
+
+        refid, symbol = target_id.split('-')
+
+        if symbol == 'place':
+            self._delete_place(refid)
+        elif symbol == 'transition':
+            self._delete_transition(refid)
+        else:
+            self._delete_arc(target_id)
+            
+
+    def _delete_place(self, refid):
+        console.log('delete place', refid)
+
+    def _delete_transition(self, refid):
+        console.log('delete place', refid)
+
+    def _delete_arc(self, refid):
+        console.log('delete arc', refid)
+

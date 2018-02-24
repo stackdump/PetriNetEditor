@@ -1,27 +1,26 @@
-Fri Feb 23 22:48:53 CST 2018
+Sat Feb 24 11:35:43 CST 2018
 
 WIP
 ---
-
-allow insert p/t symbols into net
-* KLUDGE: must pad out 0's for all transitions
+* add missing delete tool for place/symbols
 
 BACKLOG
 -------
 
+* editor features
+  * allow edits from console
+  * missing arc creation tool
+  * missing token +/- tool
+  * missing edit dialog for updating symbol attributes
+  * missing arc weight handle
+    * should use a number positioned at midpoint in line as a clickable handle
+    * update delete tool to work on arcs
+
 * simulator(eventstore)
-  * should have a 'reset'
-    * txns are no longer hilighted
-    * & token_leger is reset to inital condition
   * should redraw only pieces that have moved
   * show history in GUI somehow
   * provide replay, fwd back of event stream
 
-* editor features
-  * allow edits from console
-  * missing arc tool
-  * missing token +/- tool
-  * missing edit dialog for updating symbol attributes
 
 ICEBOX
 ------

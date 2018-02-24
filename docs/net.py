@@ -64,6 +64,10 @@ class PNet(object):
         for name, attr in self.place_defs.items():
             self.token_ledger[name] = statevector[attr['offset']]
 
+    def reset_tokens(self):
+        for name, attr in NETS[SCHEMA]['places'].items():
+            self.token_ledger[name] = attr['inital']
+
     def reindex(self):
         """ rebuild data points """
 
