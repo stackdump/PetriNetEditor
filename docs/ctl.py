@@ -115,38 +115,6 @@ class Editor(Controller):
 
         self.reset(self.render)
 
-    def _insert_place(self, coords, inital=0):
-        _offset = net.INSTANCE.vector_size
-        net.INSTANCE.vector_size = _offset + 1
-
-        label = 'p%i' % _offset
-
-        console.log(coords, 'insert-place', label)
-
-        net.INSTANCE.place_defs[label] = {
-            'position': coords,
-            'inital': inital,
-            'offset': _offset
-        }
-
-        net.INSTANCE.token_ledger[label] = inital
-
-        for name, attr in net.INSTANCE.transition_defs.items():
-            attr['delta'].append(0)
-
-    def _insert_transition(self, coords):
-        size = len(net.INSTANCE.transition_defs)
-
-        label = 't%i' % size
-
-        console.log(coords, 'insert-transition', label)
-
-        net.INSTANCE.transition_defs[label] = {
-            'position': coords,
-            'role': 'default',
-            'delta': [0] * net.INSTANCE.vector_size
-        }
-
     def simulator(self, event):
         """ control start/stop simulation mode """
         target_id = event.target.text
@@ -166,12 +134,13 @@ class Editor(Controller):
     def tool(self, event):
         """ modify existing symbol on net """
         target_id = str(event.target.id)
+        self.move_enabled = False
 
         if target_id == 'arc':
             # TODO: should put into mode where we select input arc
-            self.move_enabled = False
             console.log('start arc creation') # next selected handle is 'start' 
         elif target_id == 'delete':
+            console.log('delete enabled')
             self.callback = self.on_delete
 
     def on_delete(self, event):
@@ -185,19 +154,8 @@ class Editor(Controller):
         refid, symbol = target_id.split('-')
 
         if symbol == 'place':
-            self._delete_place(refid)
+            net.INSTANCE.delete_place(refid)
         elif symbol == 'transition':
-            self._delete_transition(refid)
+            net.INSTANCE.delete_transition(refid)
         else:
-            self._delete_arc(target_id)
-            
-
-    def _delete_place(self, refid):
-        console.log('delete place', refid)
-
-    def _delete_transition(self, refid):
-        console.log('delete place', refid)
-
-    def _delete_arc(self, refid):
-        console.log('delete arc', refid)
-
+            net.INSTANCE.delete_arc(target_id)

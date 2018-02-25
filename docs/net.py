@@ -58,11 +58,60 @@ class PNet(object):
         self.handles = {}
         self.reindex()
 
+    def insert_place(self, coords, inital=0):
+        _offset = self.vector_size
+        self.vector_size = _offset + 1
+
+        label = 'p%i' % _offset
+
+        console.log(coords, 'insert-place', label)
+
+        self.place_defs[label] = {
+            'position': coords,
+            'inital': inital,
+            'offset': _offset
+        }
+
+        net.INSTANCE.token_ledger[label] = inital
+
+        for name, attr in net.INSTANCE.transition_defs.items():
+            attr['delta'].append(0)
+
+    def insert_transition(self, coords):
+        size = len(self.transition_defs)
+
+        label = 't%i' % size
+
+        console.log(coords, 'insert-transition', label)
+
+        self.transition_defs[label] = {
+            'position': coords,
+            'role': 'default',
+            'delta': [0] * self.vector_size
+        }
+
     def update(self, statevector):
         """ set new statevector """
 
         for name, attr in self.place_defs.items():
             self.token_ledger[name] = statevector[attr['offset']]
+
+    def delete_place(self, refid):
+        # FIXME
+        console.log('delete place', refid)
+        offset = net.INSTANCE.place_defs[refid]['offset']
+
+        for label in net.INSTANCE.transition_defs.keys():
+            del net.INSTANCE.transition_defs[label]['delta'][offset]
+
+        del net.INSTANCE.place_defs[refid]
+
+    def delete_transition(self, refid):
+        # FIXME
+        console.log('delete place', refid)
+
+    def delete_arc(self, refid):
+        console.log('delete arc', refid)
 
     def reset_tokens(self):
         for name, attr in NETS[SCHEMA]['places'].items():
@@ -392,7 +441,7 @@ def _handle(x=0, y=50, size=40, refid=None, symbol=None):
             elif symbol == 'transition':
                 INSTANCE.transition_defs[refid]['position'] = new_coords
 
-            CTL.render() # FIXME: should be a reference to Control ??
+            CTL.render()
 
         CTL.reset(callback=_move_and_redraw)
 
