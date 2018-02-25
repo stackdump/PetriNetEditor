@@ -41,7 +41,6 @@ class Controller(object):
     def reset(self, callback=None):
         """ clear SVG and prepare markers """
         net.PAPER
-        console.log('reset')
         
         if not net.PAPER:
             net.PAPER=window.Snap('#net')
@@ -69,7 +68,6 @@ class Editor(Controller):
         self.simulation = None
 
     def is_selectable(self, target_id):
-        console.log(target_id)
 
         if '-' not in target_id:
             return False
@@ -88,7 +86,6 @@ class Editor(Controller):
             return
 
         refid, symbol = target_id.split('-')
-        console.log(refid, symbol)
 
     def select(self, event):
         """ enter select/move mode """
@@ -119,10 +116,8 @@ class Editor(Controller):
     def simulator(self, event):
         """ control start/stop simulation mode """
         target_id = event.target.text
-        console.log(target_id)
 
         if target_id == 'reset':
-            console.log('reset simulation')
             if self.simulation:
                 self.simulation.reset()
             self.callback = self.on_select
@@ -142,7 +137,6 @@ class Editor(Controller):
             # TODO: should put into mode where we select input arc
             console.log('start arc creation') # next selected handle is 'start' 
         elif target_id == 'delete':
-            console.log('delete enabled')
             self.callback = self.on_delete
 
     def on_delete(self, event):

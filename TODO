@@ -1,15 +1,13 @@
-Sat Feb 24 22:42:36 CST 2018
+Sun Feb 25 11:34:29 CST 2018
 
 WIP
 ---
-* add missing delete tool for symbols
-* fix place delete to also remove arcs that use it
+* fix symbol delete to also remove arcs that use it
 
 BACKLOG
 -------
 
 * editor features
-  * allow edits from console
   * missing arc creation tool
   * missing token +/- tool
   * missing edit dialog for updating symbol attributes
@@ -17,14 +15,22 @@ BACKLOG
     * should use a number positioned at midpoint in line as a clickable handle
     * update delete tool to work on arcs
 
-* simulator(eventstore)
-  * should redraw only pieces that have moved
-  * show history in GUI somehow
-  * provide replay, fwd back of event stream
+* simulator (gui)
+  * should only redraw pieces that have moved
 
+* bugs (gui)
+  * clearing/reseting the SVG seems to hang on android browsers: chrome & FF
+  * moving symbols doesn't work in destkop FF
+
+* add link to Github in UI
 
 ICEBOX
 ------
+* allow edits & interaction from brython terminal
+
+* simulator(eventstore)
+  * show history in GUI somehow
+  * provide replay, fwd back of event stream
 
 * allow petri-net json to be written back to disk
   * allow save to local storage in browser as PNML

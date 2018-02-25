@@ -33,13 +33,15 @@
 <body onload="brython(1)">
   <div id="dialog" title="Bitwrap-Brython">
     <p>
-       Planned Features
+       NOTE: this project is still in development
+       and works best in Chrome
        <ul>
-         <li>Bitwrap Eventstore client(done)</li>
-         <li>Python terminal(done)</li>
-         <li>Petri-Net Editor(wip)</li>
-         <li>Petri-Net Simulator(todo)</li>
-         <li>Tools for testing and deploying to bitwrap (todo)</li>
+         <li>Bitwrap Eventstore client(DONE)</li>
+         <li>Python terminal(DONE)</li>
+         <li>Petri-Net Simulator(DONE)</li>
+         <li>Petri-Net Editor(WIP)</li>
+         <li>Tools for testing and deploying net to bitwrap(TODO)</li>
+         <li>Fix bugs for browsers other than Chrome(TODO)</li>
        </ul>
     </p>
   </div>
@@ -71,8 +73,8 @@
       $('#dialog').dialog();
     </script>
 
-    <!-- run the console app -->
-    <script type="text/python3" src="term.py"></script>
+    <!-- run the brython app -->
+    <script type="text/python3" src="app.py"></script>
   </div>
 </body>
 </html>

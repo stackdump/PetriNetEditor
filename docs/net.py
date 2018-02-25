@@ -64,8 +64,6 @@ class PNet(object):
 
         label = 'p%i' % _offset
 
-        console.log(coords, 'insert-place', label)
-
         self.place_defs[label] = {
             'position': coords,
             'inital': inital,
@@ -83,8 +81,6 @@ class PNet(object):
 
         label = 't%i' % size
 
-        console.log(coords, 'insert-transition', label)
-
         self.transition_defs[label] = {
             'position': coords,
             'role': 'default',
@@ -98,8 +94,9 @@ class PNet(object):
             self.token_ledger[name] = statevector[attr['offset']]
 
     def delete_place(self, refid):
+        """ remove a place symbol from net """
+        # TODO: remove arcs that use this place
         offset = net.INSTANCE.place_defs[refid]['offset']
-        console.log('delete place', refid, offset)
 
         for label in self.transition_defs.keys():
             del self.transition_defs[label]['delta'][offset]
@@ -111,8 +108,11 @@ class PNet(object):
         self.vector_size = len(self.place_defs)
 
     def delete_transition(self, refid):
-        # FIXME
+        """ remove a transition symbol from net """
+        # TODO: remove arcs that use this transition
         console.log('delete place', refid)
+        del self.transition_defs[refid]
+        del self.transitions[refid]
 
     def delete_arc(self, refid):
         console.log('delete arc', refid)
@@ -124,14 +124,12 @@ class PNet(object):
     def reindex(self):
         """ rebuild data points """
 
-        console.log('reindex')
         for name, attr in NETS[SCHEMA]['places'].items():
             self.place_names[attr['offset']] = name
             self.place_defs[name] = attr
 
             if name not in self.token_ledger:
                 self.token_ledger[name] = attr['inital']
-
 
         self.vector_size = len(self.place_defs)
 
@@ -150,7 +148,6 @@ class PNet(object):
 
     def render(self):
         """ draw the petri-net """
-        console.log('render')
         self.draw_nodes()
         self.draw_handles()
         self.draw_arcs()
@@ -159,8 +156,6 @@ class PNet(object):
         """ draw points used to align other elements """
 
         for name, attr in self.place_defs.items():
-            console.log('draw ' + name)
-
             el = place(attr['position'][0], attr['position'][1], label=name)
             el.data('offset', attr['offset'])
             el.data('inital', attr['inital']) 
@@ -175,7 +170,6 @@ class PNet(object):
         """ draw places and transitions """
 
         for label, pl in self.places.items():
-
             self.handles[label] = _handle(
                 x=float(pl.node.attributes.x2.value),
                 y=float(pl.node.attributes.y2.value),
@@ -184,7 +178,6 @@ class PNet(object):
             )
 
         for label, tx in self.transitions.items():
-
             self.handles[label] = _handle(
                 x=float(tx.node.attributes.x2.value),
                 y=float(tx.node.attributes.y2.value),
