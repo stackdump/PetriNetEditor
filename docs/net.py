@@ -72,7 +72,8 @@ class PNet(object):
             'offset': _offset
         }
 
-        net.INSTANCE.token_ledger[label] = inital
+        self.place_names[_offset] = label
+        self.token_ledger[label] = inital
 
         for name, attr in net.INSTANCE.transition_defs.items():
             attr['delta'].append(0)
@@ -97,14 +98,17 @@ class PNet(object):
             self.token_ledger[name] = statevector[attr['offset']]
 
     def delete_place(self, refid):
-        # FIXME
-        console.log('delete place', refid)
         offset = net.INSTANCE.place_defs[refid]['offset']
+        console.log('delete place', refid, offset)
 
-        for label in net.INSTANCE.transition_defs.keys():
-            del net.INSTANCE.transition_defs[label]['delta'][offset]
+        for label in self.transition_defs.keys():
+            del self.transition_defs[label]['delta'][offset]
 
-        del net.INSTANCE.place_defs[refid]
+        del self.token_ledger[refid]
+        del self.place_defs[refid]
+        del self.place_names[offset]
+        del self.places[refid]
+        self.vector_size = len(self.place_defs)
 
     def delete_transition(self, refid):
         # FIXME
@@ -120,6 +124,7 @@ class PNet(object):
     def reindex(self):
         """ rebuild data points """
 
+        console.log('reindex')
         for name, attr in NETS[SCHEMA]['places'].items():
             self.place_names[attr['offset']] = name
             self.place_defs[name] = attr
@@ -128,7 +133,7 @@ class PNet(object):
                 self.token_ledger[name] = attr['inital']
 
 
-        self.vector_size = len(self.place_names)
+        self.vector_size = len(self.place_defs)
 
         for name, attr in NETS[SCHEMA]['transitions'].items():
             if name not in self.arc_defs:
@@ -145,6 +150,7 @@ class PNet(object):
 
     def render(self):
         """ draw the petri-net """
+        console.log('render')
         self.draw_nodes()
         self.draw_handles()
         self.draw_arcs()
@@ -153,6 +159,7 @@ class PNet(object):
         """ draw points used to align other elements """
 
         for name, attr in self.place_defs.items():
+            console.log('draw ' + name)
 
             el = place(attr['position'][0], attr['position'][1], label=name)
             el.data('offset', attr['offset'])

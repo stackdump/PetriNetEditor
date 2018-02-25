@@ -1,8 +1,9 @@
-Sat Feb 24 11:35:43 CST 2018
+Sat Feb 24 22:42:36 CST 2018
 
 WIP
 ---
-* add missing delete tool for place/symbols
+* add missing delete tool for symbols
+* fix place delete to also remove arcs that use it
 
 BACKLOG
 -------

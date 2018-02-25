@@ -18,7 +18,7 @@ def __onload(ctx):
     global CTL
     CTL = Editor()
 
-    window.jQuery('#net').on('click', CTL.insert)
+    window.jQuery('#net').on('click', CTL.on_insert)
     window.jQuery('.select').on('click', CTL.select)
     window.jQuery('.symbol').on('click', CTL.symbol)
     window.jQuery('.tool').on('click', CTL.tool)
@@ -41,6 +41,7 @@ class Controller(object):
     def reset(self, callback=None):
         """ clear SVG and prepare markers """
         net.PAPER
+        console.log('reset')
         
         if not net.PAPER:
             net.PAPER=window.Snap('#net')
@@ -100,7 +101,7 @@ class Editor(Controller):
         sym = str(event.target.id)
         self.selected_insert_symbol = sym
 
-    def insert(self, event):
+    def on_insert(self, event):
         """ insert a symbol into net """
         if not self.selected_insert_symbol:
             return
@@ -109,11 +110,11 @@ class Editor(Controller):
         # TODO: make call to insert new symbol in INSTANCE
 
         if self.selected_insert_symbol == 'place':
-            self._insert_place(new_coords)
+            net.INSTANCE.insert_place(new_coords)
         else:
-            self._insert_transition(new_coords)
+            net.INSTANCE.insert_transition(new_coords)
 
-        self.reset(self.render)
+        self.reset(callback=self.render)
 
     def simulator(self, event):
         """ control start/stop simulation mode """
@@ -133,8 +134,9 @@ class Editor(Controller):
 
     def tool(self, event):
         """ modify existing symbol on net """
-        target_id = str(event.target.id)
         self.move_enabled = False
+        self.selected_insert_symbol = None
+        target_id = str(event.target.id)
 
         if target_id == 'arc':
             # TODO: should put into mode where we select input arc
@@ -147,7 +149,6 @@ class Editor(Controller):
         """ callback when clicking elements when delete tool is active """
         target_id = str(event.target.id)
 
-        console.log(target_id)
         if not self.is_selectable(target_id):
             return
 
@@ -159,3 +160,5 @@ class Editor(Controller):
             net.INSTANCE.delete_transition(refid)
         else:
             net.INSTANCE.delete_arc(target_id)
+
+        self.reset(callback=self.render)
