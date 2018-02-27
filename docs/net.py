@@ -74,6 +74,62 @@ class Draw(object):
             'markerEnd': SYMBOLS['arrow']
         })
 
+    @staticmethod
+    def handle(x=0, y=50, size=40, refid=None, symbol=None):
+        """
+        add group of elements needed for UI interaction
+        here mouse events are bound to controler actions
+        """
+        _id = refid + '-handle'
+
+        point = SYMBOLS[refid]
+        handle = PAPER.g(point, Draw._label(refid))
+
+        if symbol == 'place':
+           el = Draw._place(x=x, y=y, size=size, refid=refid, symbol=symbol)
+           el.data('refid', refid)
+           token_el = Draw._tokens(refid)
+           handle.add(el, token_el)
+
+        elif symbol == 'transition':
+           el = Draw._transition(x=x, y=y, size=size, refid=refid, symbol=symbol)
+           handle.add(el)
+
+        el.data('refid', refid)
+        SYMBOLS[_id] = handle
+
+        def _drag_start(x, y, mousevent):
+            """ begin mouse interaction """
+            CTL.on_click(mousevent)
+
+        def _drag_end(mouseevent):
+            """ complete mouse interaction """
+            if not CTL.move_enabled:
+                return
+
+            def _move_and_redraw():
+                """ trigger action in UI """
+                new_coords = [mouseevent.offsetX, mouseevent.offsetY]
+                if symbol == 'place':
+                    INSTANCE.place_defs[refid]['position'] = new_coords
+                elif symbol == 'transition':
+                    INSTANCE.transition_defs[refid]['position'] = new_coords
+
+                CTL.render()
+
+            CTL.reset(callback=_move_and_redraw)
+
+        def _dragging(dx, dy, x, y, event):
+            """ svg transformation while dragging """
+            if not CTL.move_enabled:
+                return
+
+            _tx = 't %i %i' % (dx, dy)
+            handle.transform(_tx)
+        
+        handle.drag(_dragging, _drag_start, _drag_end)
+
+        return el
 
     @staticmethod
     def place(x, y, label=None):
@@ -252,64 +308,6 @@ class Draw(object):
         return el
 
     @staticmethod
-    def handle(x=0, y=50, size=40, refid=None, symbol=None):
-        """
-        add group of elements needed for UI interaction
-        here mouse events are bound to controler actions
-        """
-        _id = refid + '-handle'
-
-        point = SYMBOLS[refid]
-        handle = PAPER.g(point, Draw._label(refid))
-
-        if symbol == 'place':
-           el = Draw._place(x=x, y=y, size=size, refid=refid, symbol=symbol)
-           el.data('refid', refid)
-           token_el = Draw._tokens(refid)
-           INSTANCE.token_ledger[refid]
-           handle.add(el, token_el)
-
-        elif symbol == 'transition':
-           el = Draw._transition(x=x, y=y, size=size, refid=refid, symbol=symbol)
-           handle.add(el)
-
-        el.data('refid', refid)
-        SYMBOLS[_id] = handle
-
-        def _drag_start(x, y, mousevent):
-            """ begin mouse interaction """
-            CTL.on_click(mousevent)
-
-        def _drag_end(mouseevent):
-            """ complete mouse interaction """
-            if not CTL.move_enabled:
-                return
-
-            def _move_and_redraw():
-                """ trigger action in UI """
-                new_coords = [mouseevent.offsetX, mouseevent.offsetY]
-                if symbol == 'place':
-                    INSTANCE.place_defs[refid]['position'] = new_coords
-                elif symbol == 'transition':
-                    INSTANCE.transition_defs[refid]['position'] = new_coords
-
-                CTL.render()
-
-            CTL.reset(callback=_move_and_redraw)
-
-        def _dragging(dx, dy, x, y, event):
-            """ svg transformation while dragging """
-            if not CTL.move_enabled:
-                return
-
-            _tx = 't %i %i' % (dx, dy)
-            handle.transform(_tx)
-        
-        handle.drag(_dragging, _drag_start, _drag_end)
-
-        return el
-
-    @staticmethod
     def _transition(x=0, y=50, size=40, refid=None, symbol=None):
         """ draw transition """
 
@@ -481,7 +479,7 @@ class PNet(RenderMixin):
         self.place_names[_offset] = label
         self.token_ledger[label] = inital
 
-        for name, attr in net.INSTANCE.transition_defs.items():
+        for name, attr in self.transition_defs.items():
             attr['delta'].append(0)
 
     def insert_transition(self, coords):
@@ -507,7 +505,7 @@ class PNet(RenderMixin):
 
     def delete_place(self, refid):
         """ remove a place symbol from net """
-        offset = net.INSTANCE.place_defs[refid]['offset']
+        offset = self.place_defs[refid]['offset']
 
         for label in self.transition_defs.keys():
             del self.transition_defs[label]['delta'][offset]
@@ -517,15 +515,15 @@ class PNet(RenderMixin):
         del self.place_names[offset]
         del self.places[refid]
         self.vector_size = len(self.place_defs)
-        self.delete_arcs(refid)
+        self.delete_arcs_for_symbol(refid)
 
     def delete_transition(self, refid):
         """ remove a transition symbol from net """
         del self.transition_defs[refid]
         del self.transitions[refid]
-        self.delete_arcs(refid)
+        self.delete_arcs_for_symbol(refid)
 
-    def delete_arcs(self, refid):
+    def delete_arcs_for_symbol(self, refid):
         """ remove arcs associated with a given place or transition """
 
         # FIXME doesn't remove arc consistently
