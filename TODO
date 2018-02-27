@@ -1,19 +1,21 @@
-Sun Feb 25 11:34:29 CST 2018
+Tue Feb 27 08:35:40 CST 2018
 
 WIP
 ---
-* fix symbol delete to also remove arcs that use it
+
+update delete tool to properly remove arcs
 
 BACKLOG
 -------
 
+* fix symbol delete to also remove arcs that use it
+
 * editor features
-  * missing arc creation tool
   * missing token +/- tool
   * missing edit dialog for updating symbol attributes
   * missing arc weight handle
+  * add missing arc creation tool
     * should use a number positioned at midpoint in line as a clickable handle
-    * update delete tool to work on arcs
 
 * simulator (gui)
   * should only redraw pieces that have moved
@@ -21,6 +23,7 @@ BACKLOG
 * bugs (gui)
   * clearing/reseting the SVG seems to hang on android browsers: chrome & FF
   * moving symbols doesn't work in destkop FF
+  * because refresh/redraw is so slow - deleting several elements causes error
 
 * add link to Github in UI
 

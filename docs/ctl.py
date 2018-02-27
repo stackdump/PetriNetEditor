@@ -46,8 +46,7 @@ class Controller(object):
             net.PAPER=window.Snap('#net')
 
         net.PAPER.clear()
-        net._load_symbols()
-        net._origin()
+        net.on_load()
 
         if callback:
             callback()
@@ -59,22 +58,10 @@ class Controller(object):
 
         net.INSTANCE.render()
 
-class Editor(Controller):
+class EditorEvents(object):
+    """ Editor event callbacks """
 
-    def __init__(self):
-        self.callback = self.on_select
-        self.move_enabled = True
-        self.selected_insert_symbol = None
-        self.simulation = None
-
-    def is_selectable(self, target_id):
-
-        if '-' not in target_id:
-            return False
-        else:
-            return True
-
-    def drag_start(self, event):
+    def on_click(self, event):
         """ handle mouse events """
         self.callback(event)
 
@@ -86,17 +73,6 @@ class Editor(Controller):
             return
 
         refid, symbol = target_id.split('-')
-
-    def select(self, event):
-        """ enter select/move mode """
-        self.move_enabled = True
-        self.selected_insert_symbol = None
-        self.callback = self.on_select
-
-    def symbol(self, event):
-        """ enter insert symbol mode """
-        sym = str(event.target.id)
-        self.selected_insert_symbol = sym
 
     def on_insert(self, event):
         """ insert a symbol into net """
@@ -112,6 +88,45 @@ class Editor(Controller):
             net.INSTANCE.insert_transition(new_coords)
 
         self.reset(callback=self.render)
+
+    def on_delete(self, event):
+        """ callback when clicking elements when delete tool is active """
+        target_id = str(event.target.id)
+
+        if not self.is_selectable(target_id):
+            return
+
+        refid, symbol = target_id.split('-')
+
+        if symbol == 'place':
+            net.INSTANCE.delete_place(refid)
+        elif symbol == 'transition':
+            net.INSTANCE.delete_transition(refid)
+        else: # FIXME implement arc handle
+            #net.INSTANCE.delete_arc(target_id)
+            console.log('delete arc', refid)
+
+        self.reset(callback=self.render)
+
+class Editor(Controller, EditorEvents):
+    """ Petri-Net editor controls """
+
+    def __init__(self):
+        self.callback = self.on_select
+        self.move_enabled = True
+        self.selected_insert_symbol = None
+        self.simulation = None
+
+    def select(self, event):
+        """ enter select/move mode """
+        self.move_enabled = True
+        self.selected_insert_symbol = None
+        self.callback = self.on_select
+
+    def symbol(self, event):
+        """ enter insert symbol mode """
+        sym = str(event.target.id)
+        self.selected_insert_symbol = sym
 
     def simulator(self, event):
         """ control start/stop simulation mode """
@@ -139,20 +154,14 @@ class Editor(Controller):
         elif target_id == 'delete':
             self.callback = self.on_delete
 
-    def on_delete(self, event):
-        """ callback when clicking elements when delete tool is active """
-        target_id = str(event.target.id)
+    def is_selectable(self, target_id):
+        """ determine if element allows user interaction """
 
-        if not self.is_selectable(target_id):
-            return
+        # KLUDGE: relies on a naming convention
+        # 'primary' labels for symbols are assumed not to use the char '-'
+        # 'secondary' labels use IDs with the form <primary>-<secondary>
 
-        refid, symbol = target_id.split('-')
-
-        if symbol == 'place':
-            net.INSTANCE.delete_place(refid)
-        elif symbol == 'transition':
-            net.INSTANCE.delete_transition(refid)
+        if '-' not in target_id:
+            return False
         else:
-            net.INSTANCE.delete_arc(target_id)
-
-        self.reset(callback=self.render)
+            return True
