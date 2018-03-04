@@ -7,8 +7,9 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: bitwrap
       POSTGRES_PASSWORD: bitwrap
+      POSTGRES_DB: bitwrap
 
   rabbit:
     image: rabbitmq:3-management
@@ -29,9 +30,10 @@ services:
     build:
       context: ./
     environment:
-      PG_USER: postgres
-      PG_PASSWORD: bitwrap
-      PG_HOST: bitwrap-postgres
+      RDS_HOST: bitwrap-postgres
+      RDS_DB: bitwrap
+      RDS_USER: bitwrap
+      RDS_PASSWORD: bitwrap
       AMQP_USER: bitwrap
       AMQP_PASS: bitwrap
     depends_on:

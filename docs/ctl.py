@@ -108,6 +108,14 @@ class EditorEvents(object):
 
         self.reset(callback=self.render)
 
+    def on_trigger(self, event):
+        """ callback when triggering a transition during a simulation """
+        action = self.simulation.trigger(event)
+        # TODO: forward event to bitwrap ctx api
+        console.log(net.SCHEMA, self.simulation.oid, action)
+        CTX.dispatch(net.SCHEMA, self.simulation.oid, action)
+
+
 class Editor(Controller, EditorEvents):
     """ Petri-Net editor controls """
 
@@ -139,8 +147,11 @@ class Editor(Controller, EditorEvents):
             self.move_enabled = True
         else:
             self.move_enabled = False
-            self.simulation = sim.Simulation(net.INSTANCE, self)
-            self.callback = self.simulation.trigger
+            oid = window.Date.now()
+            self.simulation = sim.Simulation(oid, net.INSTANCE, self)
+            CTX.create(net.SCHEMA, oid)
+            console.log(net.SCHEMA, oid, 'NEW')
+            self.callback = self.on_trigger
 
     def tool(self, event):
         """ modify existing symbol on net """

@@ -1,11 +1,12 @@
 class Simulation(object):
     """ use pnet to run a simulation """
 
-    def __init__(self, net, control):
+    def __init__(self, oid, net, control):
         self.pnet = net
         self.ctl = control
         self.history = []
         self.hilight_live_transitions()
+        self.oid = oid
 
     def state_vector(self):
         """ return current state vector from token_ledger """
@@ -56,6 +57,8 @@ class Simulation(object):
         if self.commit(refid):
             self.history.append(refid)
             self.ctl.reset(callback=self.redraw)
+
+        return refid
 
     def reset(self):
         """ render SVG and hilight live transitions """

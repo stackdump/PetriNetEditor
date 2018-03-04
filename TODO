@@ -1,31 +1,28 @@
-Sat Mar  3 19:20:44 CST 2018
+Sat Mar  3 19:30:56 CST 2018
 
 WIP
 ---
 
-update delete tool to properly remove arcs
+* token +/- tool
+* add missing arc creation tool
 
 BACKLOG
 -------
 
-* fix symbol delete to also remove arcs that use it
+* edit dialog for updating symbol attributes
 
-* editor features
-  * missing token +/- tool
-  * missing edit dialog for updating symbol attributes
-  * missing arc weight handle
-  * add missing arc creation tool
-    * should use a number positioned at midpoint in line as a clickable handle
+* missing arc weight handle
+  * should use a number positioned at midpoint in line as a clickable handle
 
 * simulator (gui)
   * should only redraw pieces that have moved
 
-* bugs (gui)
-  * clearing/reseting the SVG seems to hang on android browsers: chrome & FF
-  * moving symbols doesn't work in destkop FF
-  * because refresh/redraw is so slow - deleting several elements causes error
+* bugs
+  * update delete tool to properly remove arcs
+  * verify symbol delete to also remove arcs that use it
+  * verify simulator works after making edits
 
-* add link to Github in UI
+* add link to Github repo in UI
 
 ICEBOX
 ------
@@ -48,4 +45,4 @@ ICEBOX
 * add a build step to compile python to js in ./docs
   * see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
 
-* hyperledger/ethereum smart contract simulator
+* hyperledger/ethereum ?? smart contract simulator ??
