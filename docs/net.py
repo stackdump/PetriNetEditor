@@ -98,22 +98,27 @@ class Draw(object):
         el.data('refid', refid)
         SYMBOLS[_id] = handle
 
-        def _drag_start(x, y, mousevent):
+        def _drag_start(x, y, evt):
             """ begin mouse interaction """
-            CTL.on_click(mousevent)
+            CTL.on_click(evt)
 
-        def _drag_end(mouseevent):
+        def _drag_end(evt):
             """ complete mouse interaction """
             if not CTL.move_enabled:
                 return
 
             def _move_and_redraw():
                 """ trigger action in UI """
-                new_coords = [mouseevent.offsetX, mouseevent.offsetY]
+
+                delta = handle.data('tx')
+
                 if symbol == 'place':
-                    INSTANCE.place_defs[refid]['position'] = new_coords
+                    _defs = INSTANCE.place_defs
                 elif symbol == 'transition':
-                    INSTANCE.transition_defs[refid]['position'] = new_coords
+                    _defs = INSTANCE.transition_defs
+
+                _coords = _defs[refid]['position']
+                _defs[refid]['position'] = [int(_coords[0] + delta[0]), int(_coords[1] + delta[1])]
 
                 CTL.render()
 
@@ -126,6 +131,7 @@ class Draw(object):
 
             _tx = 't %i %i' % (dx, dy)
             handle.transform(_tx)
+            handle.data('tx', [dx, dy])
         
         handle.drag(_dragging, _drag_start, _drag_end)
 
