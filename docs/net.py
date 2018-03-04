@@ -110,17 +110,20 @@ class Draw(object):
             def _move_and_redraw():
                 """ trigger action in UI """
 
-                delta = handle.data('tx')
+                try:
+                    delta = handle.data('tx')
 
-                if symbol == 'place':
-                    _defs = INSTANCE.place_defs
-                elif symbol == 'transition':
-                    _defs = INSTANCE.transition_defs
+                    if symbol == 'place':
+                        _defs = INSTANCE.place_defs
+                    elif symbol == 'transition':
+                        _defs = INSTANCE.transition_defs
 
-                _coords = _defs[refid]['position']
-                _defs[refid]['position'] = [int(_coords[0] + delta[0]), int(_coords[1] + delta[1])]
-
-                CTL.render()
+                    _coords = _defs[refid]['position']
+                    _defs[refid]['position'] = [int(_coords[0] + delta[0]), int(_coords[1] + delta[1])]
+                except:
+                    pass # skip if delta is not set
+                finally:
+                    CTL.render()
 
             CTL.reset(callback=_move_and_redraw)
 
