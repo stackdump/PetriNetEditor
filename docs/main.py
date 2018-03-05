@@ -65,7 +65,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 def clear():
     """ reload the console """
-    window.location.reload()
+    doc['code'].value = ''
 
 def credits():
     print(_credits)

@@ -81,7 +81,7 @@ def _get(resource, callback=None, errback=None):
 
 def echo(req):
     """ echo(req): append return value to terminal as an assignment to a var: '_' """
-    doc['code'].value += '_ = ' + req.response
+    doc['code'].value += "\n_ = " + req.response
 
 def schemata(callback=None):
     """ schemata(callback=None): retrieve list of available state machine definitions """

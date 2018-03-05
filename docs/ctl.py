@@ -1,4 +1,4 @@
-from browser import window, document, console
+from browser import window, document as doc, console
 import net
 import sim
 import json
@@ -145,6 +145,7 @@ class Editor(Controller, EditorEvents):
                 self.simulation.reset()
             self.callback = self.on_select
             self.move_enabled = True
+            doc['code'].value = '>>>'
         else:
             self.move_enabled = False
             oid = window.Date.now()
