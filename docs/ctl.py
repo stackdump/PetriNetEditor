@@ -145,6 +145,31 @@ class EditorEvents(object):
             net.INSTANCE.update_place_tokens(refid, new_token_count)
             self.reset(callback=self.render)
 
+    def on_arc_begin(self, event):
+        self.callback = self.on_arc_end
+        return self._arc_changed('begin', event)
+
+    def on_arc_end(self, event):
+        self.callback = self.on_arc_begin
+        return self._arc_changed('end', event)
+
+    def _arc_changed(self, op, event):
+        target_id = str(event.target.id)
+
+        if not self.is_selectable(target_id):
+            return
+
+        refid, symbol = target_id.split('-')
+
+        console.log(op, refid, symbol)
+
+        if op == 'end':
+            # TODO: compare select arc endpoint
+            # to assert it is not the same symbol type
+            self.selected_arc_endpoint = None
+        elif op == 'begin':
+            self.selected_arc_endpoint = [refid, symbol]
+
 class Editor(Controller, EditorEvents):
     """ Petri-Net editor controls """
 
@@ -152,6 +177,7 @@ class Editor(Controller, EditorEvents):
         self.callback = self.on_select
         self.move_enabled = True
         self.selected_insert_symbol = None
+        self.selected_arc_endpoint = None
         self.simulation = None
 
     def select(self, event):
@@ -187,11 +213,11 @@ class Editor(Controller, EditorEvents):
         """ modify existing symbol on net """
         self.move_enabled = False
         self.selected_insert_symbol = None
+        self.selected_arc_endpoint = None
         target_id = str(event.target.id)
 
         if target_id == 'arc':
-            # TODO: should put into mode where we select input arc
-            console.log('start arc creation') # next selected handle is 'start' 
+            self.callback = self.on_arc_begin
         elif target_id == 'delete':
             self.callback = self.on_delete
         elif target_id == 'dec_token':
