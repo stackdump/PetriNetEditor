@@ -1,9 +1,8 @@
-Sat Mar  3 19:30:56 CST 2018
+Tue Mar  6 20:17:03 CST 2018
 
 WIP
 ---
 
-* token +/- tool
 * add missing arc creation tool
 
 BACKLOG
@@ -16,6 +15,7 @@ BACKLOG
 
 * simulator (gui)
   * should only redraw pieces that have moved
+  *  test after token count change
 
 * bugs
   * update delete tool to properly remove arcs

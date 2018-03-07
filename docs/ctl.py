@@ -115,6 +115,35 @@ class EditorEvents(object):
         console.log(net.SCHEMA, self.simulation.oid, action)
         CTX.dispatch(net.SCHEMA, self.simulation.oid, action)
 
+    def on_token_inc(self, event):
+        return self._token_changed('inc', event)
+
+    def on_token_dec(self, event):
+        return self._token_changed('dec', event)
+
+    def _token_changed(self, op, event):
+        target_id = event.target.id
+
+        if not self.is_selectable(target_id):
+            return
+
+        refid, symbol = target_id.split('-')
+
+        if not symbol == 'place':
+            return
+
+        current = net.INSTANCE.token_ledger[refid]
+
+        if op == 'dec':
+            change = -1
+        elif op == 'inc':
+            change = 1
+
+        new_token_count = current + change
+
+        if new_token_count >= 0:
+            net.INSTANCE.update_place_tokens(refid, new_token_count)
+            self.reset(callback=self.render)
 
 class Editor(Controller, EditorEvents):
     """ Petri-Net editor controls """
@@ -165,6 +194,10 @@ class Editor(Controller, EditorEvents):
             console.log('start arc creation') # next selected handle is 'start' 
         elif target_id == 'delete':
             self.callback = self.on_delete
+        elif target_id == 'dec_token':
+            self.callback = self.on_token_dec
+        elif target_id == 'inc_token':
+            self.callback = self.on_token_inc
 
     def is_selectable(self, target_id):
         """ determine if element allows user interaction """

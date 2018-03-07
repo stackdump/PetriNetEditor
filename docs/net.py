@@ -512,6 +512,13 @@ class PNet(RenderMixin):
         for name, attr in self.place_defs.items():
             self.token_ledger[name] = statevector[attr['offset']]
 
+    def update_place_tokens(self, name, token_count):
+        """
+        update token counters for specific place
+        """
+
+        self.token_ledger[name] = token_count
+
     def delete_place(self, refid):
         """ remove a place symbol from net """
         offset = self.place_defs[refid]['offset']
