@@ -206,6 +206,7 @@ class Editor(Controller, EditorEvents):
             oid = window.Date.now()
             self.simulation = sim.Simulation(oid, net.INSTANCE, self)
             CTX.create(net.SCHEMA, oid)
+            CTX.subscribe(str(net.SCHEMA), str(oid))
             console.log(net.SCHEMA, oid, 'NEW')
             self.callback = self.on_trigger
 
