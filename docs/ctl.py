@@ -164,9 +164,31 @@ class EditorEvents(object):
         console.log(op, refid, symbol)
 
         if op == 'end':
-            # TODO: compare select arc endpoint
-            # to assert it is not the same symbol type
-            self.selected_arc_endpoint = None
+
+            begin = self.selected_arc_endpoint
+            end = [refid, symbol]
+
+            if begin[1] == end[1]:
+                return # cannot connect 2 symbols of same type
+
+            if begin[1] == 'transition':
+                txn = begin[0]
+                label = end[0]
+                direction = 'to'
+            else:
+                txn = end[0]
+                label = begin[0]
+                direction = 'from'
+
+            if txn not in net.INSTANCE.arc_defs:
+                net.INSTANCE.arc_defs[txn] = {'to': [], 'from': []}
+
+            net.INSTANCE.arc_defs[txn][direction].append(label)
+
+            self.selected_arc_endpoint = None # reset
+            # TODO: actually update transitions also 
+            # eventually deal w/ arc weight
+            self.reset(callback=self.render)
         elif op == 'begin':
             self.selected_arc_endpoint = [refid, symbol]
 
