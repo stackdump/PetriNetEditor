@@ -1,8 +1,9 @@
-Thu Mar  8 08:21:37 CST 2018
+Fri Mar  9 08:40:38 CST 2018
+
 WIP
 ---
 
-* add missing arc creation tool
+* fix delete tool to properly remove arcs
 
 BACKLOG
 -------
@@ -17,7 +18,6 @@ BACKLOG
   *  test after token count change
 
 * bugs
-  * update delete tool to properly remove arcs
   * verify symbol delete to also remove arcs that use it
   * verify simulator works after making edits
 

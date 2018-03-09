@@ -111,7 +111,6 @@ class EditorEvents(object):
     def on_trigger(self, event):
         """ callback when triggering a transition during a simulation """
         action = self.simulation.trigger(event)
-        # TODO: forward event to bitwrap ctx api
         console.log(net.SCHEMA, self.simulation.oid, action)
         CTX.dispatch(net.SCHEMA, self.simulation.oid, action)
 
@@ -145,52 +144,57 @@ class EditorEvents(object):
             net.INSTANCE.update_place_tokens(refid, new_token_count)
             self.reset(callback=self.render)
 
-    def on_arc_begin(self, event):
-        self.callback = self.on_arc_end
-        return self._arc_changed('begin', event)
-
-    def on_arc_end(self, event):
-        self.callback = self.on_arc_begin
-        return self._arc_changed('end', event)
-
-    def _arc_changed(self, op, event):
+    def _selected(self, event):
         target_id = str(event.target.id)
 
         if not self.is_selectable(target_id):
-            return
+            return None
 
-        refid, symbol = target_id.split('-')
+        return target_id.split('-')
 
-        console.log(op, refid, symbol)
+    def on_arc_begin(self, event):
+        begin = self._selected(event)
 
-        if op == 'end':
+        if not begin:
+            return 
 
-            begin = self.selected_arc_endpoint
-            end = [refid, symbol]
+        self.callback = self.on_arc_end
+        self.selected_arc_endpoint = begin
 
-            if begin[1] == end[1]:
-                return # cannot connect 2 symbols of same type
+    def on_arc_end(self, event):
+        end = self._selected(event)
 
-            if begin[1] == 'transition':
-                txn = begin[0]
-                label = end[0]
-                direction = 'to'
-            else:
-                txn = end[0]
-                label = begin[0]
-                direction = 'from'
+        if not end:
+            return 
 
-            if txn not in net.INSTANCE.arc_defs:
-                net.INSTANCE.arc_defs[txn] = {'to': [], 'from': []}
+        self.callback = self.on_arc_begin
+        begin = self.selected_arc_endpoint
 
-            net.INSTANCE.arc_defs[txn][direction].append(label)
+        if begin[1] == end[1]:
+            return # cannot connect 2 symbols of same type
 
-            self.selected_arc_endpoint = None # reset
-            # TODO: actually update transitions also 
-            # eventually deal w/ arc weight
-            self.reset(callback=self.render)
-        elif op == 'begin':
-            self.selected_arc_endpoint = [refid, symbol]
+        if begin[1] == 'transition':
+            txn = begin[0]
+            place = end[0]
+            direction = 'to'
+            diff = 1
+        else:
+            txn = end[0]
+            place = begin[0]
+            direction = 'from'
+            diff = -1
+
+        if txn not in net.INSTANCE.arc_defs:
+            net.INSTANCE.arc_defs[txn] = {'to': [], 'from': []}
+
+        net.INSTANCE.arc_defs[txn][direction].append(place)
+
+        offset = net.INSTANCE.place_defs[place]['offset']
+        net.INSTANCE.transition_defs[txn]['delta'][offset] = diff
+
+        self.selected_arc_endpoint = None # reset
+
+        self.reset(callback=self.render)
 
 class Editor(Controller, EditorEvents):
     """ Petri-Net editor controls """
