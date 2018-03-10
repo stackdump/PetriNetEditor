@@ -1,34 +1,35 @@
-Fri Mar  9 08:40:38 CST 2018
+Sat Mar 10 06:58:50 CST 2018
 
 WIP
 ---
 
-* fix delete tool to properly remove arcs
+ fixing bugs
+  * verify symbol delete to also remove arcs that use it
+  * verify simulator works after making edits
 
 BACKLOG
 -------
 
-* edit dialog for updating symbol attributes
+* add link to Github repo in UI
 
 * missing arc weight handle
-  * should use a number positioned at midpoint in line as a clickable handle
+  * ? use SVG marker element ?
+  * should be txt/number positioned at midpoint in line as a clickable handle
+
+ICEBOX
+------
+
+* add edit dialog for updating symbol attributes
+
+* add a build step to compile python to js in ./docs
+  * see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
 
 * simulator (gui)
   * should only redraw pieces that have moved
   *  test after token count change
 
-* bugs
-  * verify symbol delete to also remove arcs that use it
-  * verify simulator works after making edits
-
-* add link to Github repo in UI
-
-ICEBOX
-------
-* allow edits & interaction from brython terminal
-
 * simulator(eventstore)
-  * show history in GUI somehow
+  * show formatted history in GUI somehow
   * provide replay, fwd back of event stream
 
 * allow petri-net json to be written back to disk
@@ -41,7 +42,6 @@ ICEBOX
     * run in the browser
     * download as .py and run on server 'publish'
 
-* add a build step to compile python to js in ./docs
-  * see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
+* allow edits & interaction from brython terminal
 
 * hyperledger/ethereum ?? smart contract simulator ??

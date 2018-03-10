@@ -67,12 +67,13 @@ class EditorEvents(object):
 
     def on_select(self, event):
         """ callback to show attributes for selected element """
-        target_id = str(event.target.id)
+        refid, symbol = self._selected(event)
 
-        if not self.is_selectable(target_id):
+        if not refid:
             return
 
-        refid, symbol = target_id.split('-')
+        console.log('on_select', refid, symbol)
+        # FIXME: should show info in editor
 
     def on_insert(self, event):
         """ insert a symbol into net """
@@ -91,12 +92,10 @@ class EditorEvents(object):
 
     def on_delete(self, event):
         """ callback when clicking elements when delete tool is active """
-        target_id = str(event.target.id)
+        refid, symbol = self._selected(event)
 
-        if not self.is_selectable(target_id):
+        if not refid:
             return
-
-        refid, symbol = target_id.split('-')
 
         if symbol == 'place':
             net.INSTANCE.delete_place(refid)
@@ -115,29 +114,18 @@ class EditorEvents(object):
         CTX.dispatch(net.SCHEMA, self.simulation.oid, action)
 
     def on_token_inc(self, event):
-        return self._token_changed('inc', event)
+        return self._token_changed(1, event)
 
     def on_token_dec(self, event):
-        return self._token_changed('dec', event)
+        return self._token_changed(-1, event)
 
-    def _token_changed(self, op, event):
-        target_id = event.target.id
-
-        if not self.is_selectable(target_id):
-            return
-
-        refid, symbol = target_id.split('-')
+    def _token_changed(self, change, event):
+        refid, symbol = self._selected(event)
 
         if not symbol == 'place':
             return
 
         current = net.INSTANCE.token_ledger[refid]
-
-        if op == 'dec':
-            change = -1
-        elif op == 'inc':
-            change = 1
-
         new_token_count = current + change
 
         if new_token_count >= 0:
@@ -148,7 +136,7 @@ class EditorEvents(object):
         target_id = str(event.target.id)
 
         if not self.is_selectable(target_id):
-            return None
+            return [None, None]
 
         return target_id.split('-')
 
