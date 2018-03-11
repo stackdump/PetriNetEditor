@@ -16,6 +16,9 @@ BACKLOG
   * ? use SVG marker element ?
   * should be txt/number positioned at midpoint in line as a clickable handle
 
+* replace bitwrap-psql storage w/ db adapter:
+  * https://twistedmatrix.com/documents/15.3.0/core/howto/rdbms.html
+
 ICEBOX
 ------
 

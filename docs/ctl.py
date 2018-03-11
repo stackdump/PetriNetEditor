@@ -26,7 +26,7 @@ def __onload(ctx):
 
     global CTX
     CTX = ctx
-    CTX.machine('octoe', callback=CTL.load)
+    CTX.machine('counter', callback=CTL.load)
 
 class Controller(object):
     """ Provide interface for UI actions """
@@ -57,6 +57,18 @@ class Controller(object):
             net.PNet(self)
 
         net.INSTANCE.render()
+        self.json_view()
+
+    def json_view(self):
+        _info = json.dumps({
+            'places': net.INSTANCE.place_defs,
+            'transitions': net.INSTANCE.transition_defs,
+            'arcs': net.INSTANCE.arc_defs,
+            'place_names': net.INSTANCE.place_names,
+            'token_ledger': net.INSTANCE.token_ledger
+        })
+
+        window.jQuery('#json').JSONView(_info)
 
 class EditorEvents(object):
     """ Editor event callbacks """

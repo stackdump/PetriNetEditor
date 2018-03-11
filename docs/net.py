@@ -373,7 +373,7 @@ class RenderMixin(object):
         for name, attr in self.place_defs.items():
             el = Draw.place(attr['position'][0], attr['position'][1], label=name)
             el.data('offset', attr['offset'])
-            el.data('inital', attr['inital']) 
+            el.data('initial', attr['initial']) 
 
             self.places[name] = el
 
@@ -450,7 +450,7 @@ class PNet(RenderMixin):
             self.place_defs[name] = attr
 
             if name not in self.token_ledger:
-                self.token_ledger[name] = attr['inital']
+                self.token_ledger[name] = attr['initial']
 
         self.vector_size = len(self.place_defs)
 
@@ -468,11 +468,11 @@ class PNet(RenderMixin):
             self.transition_defs[name] = attr
 
     def reset_tokens(self):
-        """ rebuild token counters to inital state """
+        """ rebuild token counters to initial state """
         for name, attr in NETS[SCHEMA]['places'].items():
-            self.token_ledger[name] = attr['inital']
+            self.token_ledger[name] = attr['initial']
 
-    def insert_place(self, coords, inital=0):
+    def insert_place(self, coords, initial=0):
         """ add place symbol to net """
         _offset = self.vector_size
         self.vector_size = _offset + 1
@@ -481,12 +481,12 @@ class PNet(RenderMixin):
 
         self.place_defs[label] = {
             'position': coords,
-            'inital': inital,
+            'initial': initial,
             'offset': _offset
         }
 
         self.place_names[_offset] = label
-        self.token_ledger[label] = inital
+        self.token_ledger[label] = initial
 
         for name, attr in self.transition_defs.items():
             attr['delta'].append(0)
@@ -533,11 +533,15 @@ class PNet(RenderMixin):
         self.vector_size = len(self.place_defs)
         self.delete_arcs_for_symbol(refid)
 
+        for _, attr in self.place_defs.items():
+            if attr['offset'] > offset:
+                attr['offset'] = attr['offset'] - 1
+
     def delete_transition(self, refid):
         """ remove a transition symbol from net """
         del self.transition_defs[refid]
         del self.transitions[refid]
-        self.delete_arcs_for_symbol(refid)
+        del self.arc_defs[refid]
 
     def delete_arcs_for_symbol(self, refid):
         """ remove arcs associated with a given place or transition """
@@ -549,3 +553,4 @@ class PNet(RenderMixin):
 
             if refid in attrs['from']:
                 self.arc_defs[label]['from'].remove(refid)
+

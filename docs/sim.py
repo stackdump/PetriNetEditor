@@ -7,6 +7,7 @@ class Simulation(object):
         self.history = []
         self.hilight_live_transitions()
         self.oid = oid
+        console.log('sim!')
 
     def state_vector(self):
         """ return current state vector from token_ledger """
