@@ -469,15 +469,28 @@ class PNet(RenderMixin):
 
     def reset_tokens(self):
         """ rebuild token counters to initial state """
+        # FIXME somehow get leftovers when removing all elements
+        #self.token_ledger = {}
+
         for name, attr in NETS[SCHEMA]['places'].items():
             self.token_ledger[name] = attr['initial']
+
+    def _new_place_name(self):
+        for i in range(0, self.vector_size):
+            label = 'p%i' % i
+
+            if label not in self.place_defs:
+                return label
+
+        return None
 
     def insert_place(self, coords, initial=0):
         """ add place symbol to net """
         _offset = self.vector_size
         self.vector_size = _offset + 1
 
-        label = 'p%i' % _offset
+        label = self._new_place_name()
+        assert label
 
         self.place_defs[label] = {
             'position': coords,
@@ -491,11 +504,18 @@ class PNet(RenderMixin):
         for name, attr in self.transition_defs.items():
             attr['delta'].append(0)
 
+    def _new_transition_name(self):
+        for i in range(0, len(self.transition_defs) + 1):
+            label = 't%i' % i
+
+            if label not in self.transition_defs:
+                return label
+
+        return None
+
     def insert_transition(self, coords):
         """ add transition symbol to net """
-        size = len(self.transition_defs)
-
-        label = 't%i' % size
+        label = self._new_transition_name()
 
         self.transition_defs[label] = {
             'position': coords,
@@ -521,15 +541,21 @@ class PNet(RenderMixin):
 
     def delete_place(self, refid):
         """ remove a place symbol from net """
+
+        # FIXME this seems to leave stom place names
+
+
+        #console.log(self.place_defs[refid])
         offset = self.place_defs[refid]['offset']
+
+        for idx, name in self.place_names.items():
+            if name == refid:
+                del self.place_names[idx]
+                break
 
         for label in self.transition_defs.keys():
             del self.transition_defs[label]['delta'][offset]
 
-        del self.token_ledger[refid]
-        del self.place_defs[refid]
-        del self.place_names[offset]
-        del self.places[refid]
         self.vector_size = len(self.place_defs)
         self.delete_arcs_for_symbol(refid)
 
@@ -537,11 +563,18 @@ class PNet(RenderMixin):
             if attr['offset'] > offset:
                 attr['offset'] = attr['offset'] - 1
 
+        del self.token_ledger[refid]
+        del self.place_defs[refid]
+        del self.places[refid]
+
     def delete_transition(self, refid):
         """ remove a transition symbol from net """
-        del self.transition_defs[refid]
-        del self.transitions[refid]
-        del self.arc_defs[refid]
+        try:
+            del self.transition_defs[refid]
+            del self.arc_defs[refid]
+            del self.transitions[refid]
+        except:
+            pass
 
     def delete_arcs_for_symbol(self, refid):
         """ remove arcs associated with a given place or transition """
