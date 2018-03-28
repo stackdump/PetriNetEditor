@@ -12,7 +12,7 @@ setup(
     keywords='brython',
     packages=find_packages() + ['twisted.plugins'],
     include_package_data=True,
-    install_requires=[ 'honcho==1.0.1', 'txbitwrap==0.3.0'],
+    install_requires=['txbitwrap==0.3.0'],
     long_description=DESC,
     url="www.blahchain.com/bitwrap-brython",
     classifiers=[],

@@ -104,3 +104,4 @@ ENV/
 .venv
 *.cache
 *.pid
+*.rc

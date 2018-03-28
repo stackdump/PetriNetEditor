@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 
-if [[ "x${RDS_HOST}" = 'x'  && "x${RDS_PORT_5432_TCP_ADDR}" != "x" ]] ; then
-    # map from docker ENV vars
-    export RDS_HOST=${RDS_PORT_5432_TCP_ADDR}
+if [[ -f ./env.rc ]] ; then
+    source env.rc
 fi
 
-if [[ "x${AMQP_HOST}" = 'x' && "x${AMQP_PORT_5671_TCP_ADDR}" != "x" ]] ; then
-    # map from docker ENV vars
-    export AMQP_HOST=${AMQP_PORT_5671_TCP_ADDR}
-fi
+pkill twistd 2>/dev/null
 
-if [[ "x${PNML_PATH}" = 'x' ]] ; then
-    export PNML_PATH=./schemata
-fi
+twistd $TWISTD_OPTS brython --listen-ip=0.0.0.0 --listen-port=8080
 
-export PYTHONPATH=./
-honcho start $@
+if [[ "${HOSTNAME}x" != "x" ]] ; then
+    echo -n "http://${HOSTNAME}:8080 pid:"
+    cat *.pid
+    echo
+fi
