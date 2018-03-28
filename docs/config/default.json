@@ -1,5 +1,5 @@
 {
-  "endpoint": "https://api-qa.bitwrap.io",
+  "endpoint": "http://api.bitwrap.io:8080",
   "use_websocket": true,
   "auth": {
     "provider": "github",
