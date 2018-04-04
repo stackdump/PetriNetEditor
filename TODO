@@ -1,50 +1,38 @@
-Wed Mar 28 06:45:41 UTC 2018
+Tue Apr  3 21:57:39 CDT 2018
 
 WIP
 ---
 
- fixing bugs
-  * verify symbol delete to also remove arcs that use it
-  * verify simulator works after making edits
+* upstream changes to txbitwrap - replace bitwrap-psql storage w/ db adapter:
+  * https://twistedmatrix.com/documents/15.3.0/core/howto/rdbms.html
+
 
 BACKLOG
 -------
 
-* add link to Github repo in UI
+* UI improvement
+  * add link to Github repo in UI
+  * add dropdown for selecting which schema to render 
+  * add edit dialog for updating symbol attributes
 
-* missing arc weight handle
-  * ? use SVG marker element ?
-  * should be txt/number positioned at midpoint in line as a clickable handle
-
-* replace bitwrap-psql storage w/ db adapter:
-  * https://twistedmatrix.com/documents/15.3.0/core/howto/rdbms.html
+* UI bugs
+  * token ledger isn't reset when resetting a simulation
+  * missing arc weight handle
+    * ? use SVG marker element ?
+    * should be txt/number positioned at midpoint in line as a clickable handle
 
 ICEBOX
 ------
 
-* add edit dialog for updating symbol attributes
-
-* add a build step to compile python to js in ./docs
-  * see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
-
-* simulator (gui)
-  * should only redraw pieces that have moved
-  *  test after token count change
+* allow petri-net json to be written back to disk over jsonrpc service
+  * allow save to local storage in browser as PNML
+  * support downloads as <pnml>.xml
 
 * simulator(eventstore)
   * show formatted history in GUI somehow
   * provide replay, fwd back of event stream
 
-* allow petri-net json to be written back to disk
-  * allow save to local storage in browser as PNML
-  * support downloads as <pnml>.xml
+* add a build step to compile python to js in ./docs
+  * see also: https://github.com/brython-dev/brython/wiki/Writing-an-Android-application
 
-* code simulator(event handler)
-  * use the websocket as an upstream source of events
-  * allow an end user to develop an event handler that can
-    * run in the browser
-    * download as .py and run on server 'publish'
-
-* allow edits & interaction from brython terminal
-
-* hyperledger/ethereum ?? smart contract simulator ??
+* hyperledger/ethereum ?? smart contract generator/framework ??
