@@ -123,7 +123,6 @@ class EditorEvents(object):
         """ callback when triggering a transition during a simulation """
         action = self.simulation.trigger(event)
         console.log(net.SCHEMA, self.simulation.oid, action)
-        CTX.dispatch(net.SCHEMA, self.simulation.oid, action)
 
     def on_token_inc(self, event):
         return self._token_changed(1, event)
@@ -231,8 +230,6 @@ class Editor(Controller, EditorEvents):
             self.move_enabled = False
             oid = window.Date.now()
             self.simulation = sim.Simulation(oid, net.INSTANCE, self)
-            CTX.create(net.SCHEMA, oid)
-            CTX.subscribe(str(net.SCHEMA), str(oid))
             console.log(net.SCHEMA, oid, 'NEW')
             self.callback = self.on_trigger
 

@@ -1,2 +1,0 @@
-recursive-include bitwrap_brython *.*
-recursive-include twisted *.py

@@ -3,28 +3,9 @@
 import dsl
 import json
 from browser import window
-from dsl import subscribe, unsubscribe, echo # util
-from dsl import load, create, destroy # modify stream
-from dsl import schemata, state, machine, dispatch, stream, event, exists # use stream
+from dsl import machine, echo
 
-commands = [
-    'subscribe',
-    'unsubscribe',
-    'load',
-    'create',
-    'destroy',
-    'schemata',
-    'state',
-    'machine',
-    'dispatch',
-    'stream',
-    'event',
-    'exists'
-]
-
-from dsl import subscribe, unsubscribe, echo # util
-from dsl import load, create, destroy # modify stream
-from dsl import schemata, state, machine, dispatch, stream, event, exists # use stream
+commands = [ 'machine']
 
 import ctl
 

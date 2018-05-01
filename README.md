@@ -1,39 +1,19 @@
 bitwrap-brython
 ===============
 
-Use browser-based python('brython') for prototyping apps using the bitwrap eventstore.
+Petri-Net Editor Using jQuery-UI and Snap.svg along w/
+[Brython](https://www.brython.info/static_doc/en/intro.html?lang=en)
 
-**Status**
-
-Developing Petri-Net Editor Using jQuery-UI and Snap.svg along w/ Brython.
-
-development
+Development
 -----------
 
-[Brython Docs](https://www.brython.info/static_doc/en/intro.html?lang=en)
+**Install auto-reloading webserver**
 
-**Start DB and Broker**
-
-    docker-compose up -d postgres rabbit
-
-**Access Rabbit admin**
-
-    http://127.0.0.1:15672
-
-**Use Postgres cli**
-
-    docker-compose exec postgres bash -c 'psql -U postgres'
-
-**Add some Brython**
-
-Add python docs to ./docs folder and then load in html.
-
-    <body onload="brython(1)">
-      <script type="text/python3" src="/src/console.py"></script>
-      <textarea id=code class=codearea rows=100></textarea>
-    </body>
+    pip install -r requirements.txt
 
 **Run Server**
 
-    ./entry.sh
+    ./entry.py
 
+As you edit brython code in `./docs`
+webserver sends a signal for browser to reload.

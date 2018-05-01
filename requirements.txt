@@ -1,3 +1,1 @@
--e git+https://github.com/bitwrap/bitwrap-machine.git#egg=bitwrap-machine
--e git+https://github.com/bitwrap/bitwrap-psql.git#egg=bitwrap-psql
--e git+https://github.com/stackdump/txbitwrap.git#egg=txbitwrap
+livereload==2.5.1
