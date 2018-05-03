@@ -224,7 +224,7 @@ doc['code'].bind('keypress', myKeyPress)
 doc['code'].bind('keydown', myKeyDown)
 doc['code'].bind('click', cursorToEnd)
 v = sys.implementation.version
-doc['code'].value = "Bitwrap-Brython on %s %s\n>>> " % ( window.navigator.appName, window.navigator.appVersion)
+doc['code'].value = "PetriNetEditor on %s %s\n>>> " % ( window.navigator.appName, window.navigator.appVersion)
 doc['code'].value += "help(ctx)"
 doc['code'].focus()
 cursorToEnd()

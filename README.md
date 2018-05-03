@@ -1,5 +1,5 @@
-bitwrap-brython
-===============
+PetriNetEditor
+==============
 
 Petri-Net Editor Using jQuery-UI and Snap.svg along w/
 [Brython](https://www.brython.info/static_doc/en/intro.html?lang=en)
