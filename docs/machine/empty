@@ -1,0 +1,7 @@
+{
+    "machine": {
+        "name": "empty",
+        "places": {},
+        "transitions": {}
+    }
+}
