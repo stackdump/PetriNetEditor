@@ -193,7 +193,7 @@ def onload(callback=None):
     doc['code'].bind('keypress', myKeyPress)
     doc['code'].bind('keydown', myKeyDown)
     doc['code'].bind('click', cursorToEnd)
-    doc['code'].value = "bitwrap-io on %s %s\n>>> " % ( window.navigator.appName, window.navigator.appVersion)
+    doc['code'].value = "PetriNetEditor on %s %s\n>>> " % ( window.navigator.appName, window.navigator.appVersion)
     doc['code'].focus()
     cursorToEnd()
 

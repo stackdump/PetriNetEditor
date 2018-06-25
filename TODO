@@ -1,13 +1,23 @@
 Mon Jun 25 01:18:57 CDT 2018
 
+refactor to allow PNML edit & simulation in browser
+
 WIP
 ---
 
-refactor to allow PNML edit & simulation in browser
-
-remove websocket & database save features
+finish Importer
 
 BACKLOG
 -------
 
-? publish as chrome extension ?
+* remove websocket features
+
+* deal only w/ XML client side
+
+
+ICEBOX
+------
+
+* ? publish as chrome extension ?
+
+* design other Brython features to surface for end user

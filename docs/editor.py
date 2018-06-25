@@ -31,6 +31,7 @@ class EditorBase(object):
 
     def load(self, res):
         """ store requested PNML and render as SVG """
+        # REVIEW: consider moving json parse logic to Importer
         self.instance = PNet(json.loads(res.text), editor=self)
         self.reset(callback=self.render)
 
