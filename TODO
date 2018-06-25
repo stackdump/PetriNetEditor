@@ -1,0 +1,13 @@
+Mon Jun 25 01:18:57 CDT 2018
+
+WIP
+---
+
+refactor to allow PNML edit & simulation in browser
+
+remove websocket & database save features
+
+BACKLOG
+-------
+
+? publish as chrome extension ?

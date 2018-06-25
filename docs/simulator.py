@@ -1,9 +1,10 @@
 class Simulation(object):
     """ use pnet to run a simulation """
 
-    def __init__(self, oid, net, control):
-        self.pnet = net
-        self.ctl = control
+    def __init__(self, oid, editor):
+        editor.ctx.log('loading simulation %s' % oid)
+        self.pnet = editor.instance
+        self.editor = editor
         self.history = []
         self.hilight_live_transitions()
         self.oid = oid
@@ -46,29 +47,29 @@ class Simulation(object):
         """ callback to trigger live transition during simulation """
         target_id = str(event.target.id)
 
-        if not self.ctl.is_selectable(target_id):
+        if not self.editor.is_selectable(target_id):
             return
 
         refid, symbol = target_id.split('-')
 
-        if not self.pnet or not symbol == 'transition':
-            return
+        if self.pnet and symbol == 'transition':
+            return self.execute(refid)
 
-        if self.commit(refid):
-            self.history.append(refid)
-            self.ctl.reset(callback=self.redraw)
+    def execute(self, action):
+        if self.commit(action):
+            self.history.append(action)
+            self.editor.reset(callback=self.redraw)
 
-        return refid
+        return action
 
     def reset(self):
-        """ render SVG and hilight live transitions """
+        """ render SVG and disable hilight """
         self.pnet.reset_tokens()
-        self.ctl.reset(callback=self.ctl.render)
+        self.editor.reset(callback=self.editor.render)
 
     def redraw(self):
         """ render SVG and hilight live transitions """
-        self.ctl.render()
-        self.hilight_live_transitions()
+        self.editor.render(callback=self.hilight_live_transitions)
 
     def hilight_live_transitions(self):
         """ visually indiciate which transitions can fire """
