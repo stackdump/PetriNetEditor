@@ -16,6 +16,11 @@ class Controller(object):
     def bind_controls(self):
         """ control editor instance """
         window.jQuery('#netreload').on('click', lambda _: self.view())
+        window.jQuery('#netterm').on('click', lambda _: self.toggle_term())
+
+    def toggle_term(self):
+        window.jQuery('#code').toggle()
+
 
     def load_saved_nets(self, req):
         """ load known schemata from server """

@@ -65,5 +65,7 @@ class Context(object):
 
             if callable(callback):
                 callback(req)
+            else:
+                echo(import_net)
 
         self._get('/schemata/%s.xml' % schema, callback=_callback)

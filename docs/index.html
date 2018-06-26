@@ -57,35 +57,38 @@
     <div id="#tabs-1">
       <div class="widget">
         <fieldset>
-          <legend><a target="_blank" href="https://en.wikipedia.org/wiki/Petri_net"> Petri-Net</a></legend>
+          <legend><a target="_blank" title="Petri Net Wikipedia" href="https://en.wikipedia.org/wiki/Petri_net"> Petri-Net</a></legend>
           <div class="controlgroup">
-            <button class="select" id="select">select</button>
-            <button class="tool" id="delete">delete</button>
-            <button class="symbol" id="place">place</button>
-            <button class="symbol" id="transition">transition</button>
-            <button class="tool" id="arc">arc</button>
-            <button class="tool" id="inc_token">+token</button>
-            <button class="tool" id="dec_token">-token</button>
+            <button class="select" title="select/drag an element" id="select">select</button>
+            <button class="tool" title="delete an element and connected arcs" id="delete">delete</button>
+            <button class="symbol" title="insert a place element" id="place">place</button>
+            <button class="symbol" title="insert a transition element" id="transition">transition</button>
+            <button class="tool" title="add an arc between two elements" id="arc">arc</button>
+            <button class="tool" title="increment tokens on initial place or arc weight" id="inc_token">+token</button>
+            <button class="tool" title="decrement tokens on initial place or arc weight" id="dec_token">-token</button>
             <span> | </span>
-            <button class="simulator" id="exec">exec</button>
-            <button class="simulator" id="reset">reset</button>
+            <button class="simulator" title="run a simulation" id="exec">exec</button>
+            <button class="simulator" title="reset simulation" id="reset">reset</button>
             <span> | </span>
-            <select class="netselect" id="netselect">
+            <select class="netselect" title="load petri-net" id="netselect">
               <option>untitled</option>
             </select>
-            <button class="netreload" id="netreload">reload</button>
-            <span style="float:right;"><a target="_blank" href="https://github.com/stackdump/PetriNetEditor">https://github.com/stackdump/PetriNetEditor</a></span>
+            <button class="netreload" title="reload from pnml definition" id="netreload">reload</button>
+            <span style="float:right;"><a target="_blank" title="GitHub Source" href="https://github.com/stackdump/PetriNetEditor">stackdump/PetriNetEditor</a></span>
           </div>
         </fieldset>
       </div>
 
       <svg id="net" width="100%" height="700px" xmlns="http://www.w3.org/2000/svg"></svg>
-      <!-- console hidden until it does something useful to analyze net -->
-      <textarea style="display: none;" id="code" class="codearea" rows="10" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="height: 100%; width: 100%"></textarea>
+      <fieldset>
+        <a href="javascript:;" title="Brython console" id="netterm">>>></a>
+      </fieldset>
+      <!-- brython console hidden by default -->
+      <textarea style="height: 100%; width: 100%; display: none;" id="code" class="codearea" rows="10" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="height: 100%; width: 100%"></textarea>
     </div>
     <div class="controlgroup">
       <fieldset>
-        <legend><a target="_blank" href="https://en.wikipedia.org/wiki/Vector_addition_system">Vector Addition State Machine</a></legend>
+        <legend><a target="_blank" title="VAS Wikipedia" href="https://en.wikipedia.org/wiki/Vector_addition_system">Vector Addition State Machine</a></legend>
         <div id="json"></div>
       </fieldset>
     </div>
