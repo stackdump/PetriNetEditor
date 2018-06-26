@@ -47,13 +47,18 @@ class EditorBase(object):
         """ export to xml and post to server """
         return Export(self.instance).to_xml()
 
-    def reset(self, callback=None):
+    def reset(self, save=False, callback=None):
         """ clear SVG and prepare markers """
         if self.instance:
             self.instance.reset()
 
-        if callable(callback):
-            callback()
+        def _callback():
+            if callable(callback):
+                callback()
+        if save:
+            return self.save(callback=_callback)
+        else:
+            _callback()
 
     def render(self, callback=None):
         """ development examples """
@@ -102,7 +107,7 @@ class EditorEvents(EditorBase):
         else:
             self.instance.insert_transition(new_coords)
 
-        self.reset(callback=self.render)
+        self.reset(save=True, callback=self.render)
 
     def on_delete(self, event):
         """ callback when clicking elements when delete tool is active """
@@ -119,7 +124,7 @@ class EditorEvents(EditorBase):
             #self.instance.delete_arc(target_id)
             self.ctx.log('delete arc', refid)
 
-        self.reset(callback=self.render)
+        self.reset(save=True, callback=self.render)
 
     def on_trigger(self, event):
         """ callback when triggering a transition during a simulation """
@@ -154,7 +159,7 @@ class EditorEvents(EditorBase):
 
             if new_token_count >= 0:
                 self.instance.update_place_tokens(refid, new_token_count)
-                self.reset(callback=self.render)
+                self.reset(save=True, callback=self.render)
 
         elif symbol == 'arcweight':
             begin, end = refid.split('>')
@@ -182,7 +187,7 @@ class EditorEvents(EditorBase):
                 txn_def = self.instance.transition_defs[arctxn]
                 txn_def['delta'][txn['offset']] = txn['delta']
 
-                self.reset(callback=self.render)
+                self.reset(save=True, callback=self.render)
 
     def _selected(self, event):
         target_id = str(event.target.id)
@@ -242,7 +247,7 @@ class EditorEvents(EditorBase):
         self.instance.arc_defs[txn_label].append(arc_transaction)
         self.instance.transition_defs[txn_label]['delta'][offset] = diff
         self.selected_arc_endpoint = None # reset
-        self.reset(callback=self.render)
+        self.reset(save=True, callback=self.render)
 
 
 class Editor(EditorEvents):
