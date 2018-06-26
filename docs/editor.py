@@ -67,8 +67,7 @@ class EditorBase(object):
         _info = json.dumps({
             'places': self.instance.place_defs,
             'transitions': self.instance.transition_defs,
-            'arcs': self.instance.arc_defs,
-            'token_ledger': self.instance.token_ledger
+            'states': self.instance.token_ledger
         })
 
         window.jQuery('#json').JSONView(_info, {'collapsed': True})

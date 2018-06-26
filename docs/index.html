@@ -47,7 +47,7 @@
     <div id="#tabs-1">
       <div class="widget">
         <fieldset>
-          <legend>Petri-Net</legend>
+          <legend><a target="_blank" href="https://en.wikipedia.org/wiki/Petri_net"> Petri-Net</a></legend>
           <div class="controlgroup">
             <button class="select" id="select">select</button>
             <button class="tool" id="delete">delete</button>
@@ -64,19 +64,23 @@
               <option>untitled</option>
             </select>
             <button class="netreload" id="netreload">reload</button>
+            <span style="float:right;"><a target="_blank" href="https://github.com/stackdump/PetriNetEditor">https://github.com/stackdump/PetriNetEditor</a></span>
           </div>
         </fieldset>
       </div>
 
       <svg id="net" width="100%" height="700px" xmlns="http://www.w3.org/2000/svg"></svg>
-      <textarea id="code" class="codearea" rows="10" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="height: 100%; width: 100%"></textarea>
+      <!-- console hidden until it does something useful to analyze net -->
+      <textarea style="display: none;" id="code" class="codearea" rows="10" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="height: 100%; width: 100%"></textarea>
     </div>
-
-    <div id="#tabs-2">
-      <div id="json"></div>
+    <div class="controlgroup">
+      <fieldset>
+        <legend><a target="_blank" href="https://en.wikipedia.org/wiki/Vector_addition_system">Vector Addition State Machine</a></legend>
+        <div id="json"></div>
+      </fieldset>
     </div>
-
   </div>
+
 
 </body>
 </html>
