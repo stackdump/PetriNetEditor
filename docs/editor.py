@@ -68,7 +68,6 @@ class EditorBase(object):
             'places': self.instance.place_defs,
             'transitions': self.instance.transition_defs,
             'arcs': self.instance.arc_defs,
-            'place_names': self.instance.place_names,
             'token_ledger': self.instance.token_ledger
         })
 
