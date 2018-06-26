@@ -127,7 +127,7 @@ class EditorEvents(EditorBase):
         """ callback when triggering a transition during a simulation """
         action = self.simulation.trigger(event)
         self.ctx.log(self.schema, self.simulation.oid, action)
-        self.ctx.dispatch(self.schema, self.simulation.oid, action, payload={}, callback=self.on_commit)
+        self.on_commit(event)
 
     def on_commit(self, res_or_msg):
         """
@@ -286,9 +286,6 @@ class Editor(EditorEvents):
             self.move_enabled = False
             oid = self.ctx.time()
             self.simulation = Simulation(oid, self)
-            self.ctx.create(self.schema, oid)
-            # FIXME add subscribe after websocket functions
-            #self.ctx.subscribe(str(self.schema), str(oid))
             self.ctx.log(self.schema, oid, 'NEW')
             self.callback = self.on_trigger
 
