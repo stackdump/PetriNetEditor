@@ -1,23 +1,28 @@
-Mon Jun 25 01:18:57 CDT 2018
+Wed Jun 27 08:33:45 CDT 2018
 
 refactor to allow PNML edit & simulation in browser
 
 WIP
 ---
 
-finish Importer
+* from <saved>: fix bug (introduced by save?) where elements cannot be dragged
+  * dragged symbol doesn't 'stick'
 
 BACKLOG
 -------
 
-* remove websocket features
+* from <counter>: delete all places and replace - result cannot run sim
+  * seems like a name conflict - existing place names/states are not cleaned up
 
-* deal only w/ XML client side
-
+* add random firing simulation
+  * need an async/background thread ?  https://www.brython.info/static_doc/en/asyncio.html
 
 ICEBOX
 ------
 
 * ? publish as chrome extension ?
 
-* design other Brython features to surface for end user
+* design other Brython/CLI features to surface for end user
+  * some other petri-net tools allow for various kinds of analysis
+    ? reachability ?
+    ? boundedness ?
