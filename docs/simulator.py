@@ -2,7 +2,6 @@ class Simulation(object):
     """ use pnet to run a simulation """
 
     def __init__(self, oid, editor):
-        editor.ctx.log('loading simulation %s' % oid)
         self.pnet = editor.instance
         self.editor = editor
         self.history = []
@@ -61,11 +60,6 @@ class Simulation(object):
             self.editor.reset(callback=self.redraw)
 
         return action
-
-    def reset(self):
-        """ render SVG and disable hilight """
-        self.pnet.reset_tokens()
-        self.editor.reset(callback=self.editor.render)
 
     def redraw(self):
         """ render SVG and hilight live transitions """

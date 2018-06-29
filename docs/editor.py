@@ -69,13 +69,16 @@ class EditorBase(object):
             callback()
 
     def json_view(self):
-        _info = json.dumps({
+        info = {
             'places': self.instance.place_defs,
             'transitions': self.instance.transition_defs,
             'states': self.instance.token_ledger
-        })
+        }
 
-        window.jQuery('#json').JSONView(_info, {'collapsed': True})
+        if self.simulation:
+            info['history'] = self.simulation.history
+
+        window.jQuery('#json').JSONView(json.dumps(info), {'collapsed': True})
 
 class EditorEvents(EditorBase):
     """ Editor event callbacks """
@@ -92,7 +95,6 @@ class EditorEvents(EditorBase):
             return
 
         # FIXME: should show info in editor
-        #self.ctx.log('on_select', refid, symbol)
 
     def on_insert(self, event):
         """ insert a symbol into net """
@@ -120,29 +122,25 @@ class EditorEvents(EditorBase):
             self.instance.delete_place(refid)
         elif symbol == 'transition':
             self.instance.delete_transition(refid)
-        else: # FIXME implement arc handle
-            #self.instance.delete_arc(target_id)
-            self.ctx.log('delete arc', refid)
 
         self.reset(save=True, callback=self.render)
 
     def on_trigger(self, event):
         """ callback when triggering a transition during a simulation """
         action = self.simulation.trigger(event)
-        self.ctx.log(self.schema, self.simulation.oid, action)
+        #self.ctx.log(self.schema, self.simulation.oid, action)
         self.on_commit(event)
 
     def on_commit(self, res_or_msg):
         """
-        callback for receiving an upstream event
-        res could be a callback after an ajax response or a socketio message from server
+        callback for receiving an event
+        REVIEW: add jquery event binding here to hook editor into other logic
+        such as publishing to a web service or storing locally
         """
         if hasattr(res_or_msg, 'response'):
             event = json.loads(res_or_msg.response)
         else:
             event = res_or_msg
-
-        self.ctx.log('ONCOMMIT', event)
 
     def on_token_inc(self, event):
         return self._token_changed(1, event)
@@ -281,7 +279,9 @@ class Editor(EditorEvents):
 
         if target_id == 'reset':
             if self.simulation:
-                self.simulation.reset()
+                self.instance.reset_tokens()
+                self.simulation = None
+                self.reset(callback=self.render)
             self.callback = self.on_select
             self.move_enabled = True
             self.ctx.clear(txt='>>> ')
@@ -289,7 +289,7 @@ class Editor(EditorEvents):
             self.move_enabled = False
             oid = self.ctx.time()
             self.simulation = Simulation(oid, self)
-            self.ctx.log(self.schema, oid, 'NEW')
+            #self.ctx.echo((self.schema, 'simulation', oid))
             self.callback = self.on_trigger
 
     def tool(self, event):
