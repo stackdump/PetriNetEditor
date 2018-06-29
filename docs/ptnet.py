@@ -77,12 +77,9 @@ class PNet(RenderMixin):
 
     def reset_tokens(self):
         """ rebuild token counters to initial state """
-        # FIXME: clearing all ledger entries causes an error when a petri-net
-        # def is created in the browser rather than loaded from the server
-        #self.token_ledger = {}
-
         for name, attr in self.net['places'].items():
-            self.token_ledger[name] = attr['initial']
+            if name in self.token_ledger:
+                self.token_ledger[name] = attr['initial']
 
     def _new_place_name(self):
         for i in range(0, self.vector_size):
