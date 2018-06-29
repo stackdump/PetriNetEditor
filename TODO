@@ -1,18 +1,16 @@
-Wed Jun 27 08:33:45 CDT 2018
+Fri Jun 29 00:44:20 CDT 2018
 
 refactor to allow PNML edit & simulation in browser
 
 WIP
 ---
 
-* from <saved>: fix bug (introduced by save?) where elements cannot be dragged
-  * dragged symbol doesn't 'stick'
+* from <counter>: delete all places and replace - result cannot run sim
+  * seems like a name conflict - existing place names/states are not cleaned up
 
 BACKLOG
 -------
 
-* from <counter>: delete all places and replace - result cannot run sim
-  * seems like a name conflict - existing place names/states are not cleaned up
 
 * add random firing simulation
   * need an async/background thread ?  https://www.brython.info/static_doc/en/asyncio.html
