@@ -5,15 +5,13 @@ refactor to allow PNML edit & simulation in browser
 WIP
 ---
 
-* from <counter>: delete all places and replace - result cannot run sim
-  * seems like a name conflict - existing place names/states are not cleaned up
+* add random firing simulation
+  * need an async/background thread ?  https://www.brython.info/static_doc/en/asyncio.html
+  * TODO: drive from console rather than UI
 
 BACKLOG
 -------
-
-
-* add random firing simulation
-  * need an async/background thread ?  https://www.brython.info/static_doc/en/asyncio.html
+* add save/download feature - google docs / gist integration ?
 
 ICEBOX
 ------

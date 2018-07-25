@@ -17,6 +17,7 @@ class Controller(object):
         """ control editor instance """
         window.jQuery('#netreload').on('click', lambda _: self.view())
         window.jQuery('#netterm').on('click', lambda _: self.toggle_term())
+        window.jQuery('#trigger').spinner()
 
     def toggle_term(self):
         window.jQuery('#code').toggle()
