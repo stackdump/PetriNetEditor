@@ -1,7 +1,15 @@
 <?xml version="1.0" ?>
 <list>
+  <file name="auction.xml" />
   <file name="counter.xml" />
-  <file name="octoe.xml" />
+  <file name="factom.xml" />
+  <file name="nim.xml" />
   <file name="octoe2step.xml" />
+  <file name="octoe.xml" />
+  <file name="option.xml" />
+  <file name="registry.xml" />
+  <file name="spend.xml" />
+  <file name="tip.xml" />
   <file name="untitled.xml" />
 </list>
+
